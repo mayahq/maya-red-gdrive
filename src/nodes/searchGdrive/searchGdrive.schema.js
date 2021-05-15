@@ -2,6 +2,7 @@ const {
     Node,
     Schema
 } = require('@mayahq/module-sdk')
+const GdriveAuth = require("../gdriveAuth/gdriveAuth.schema");
 
 class SearchGdrive extends Node {
     static schema = new Schema({
@@ -10,6 +11,7 @@ class SearchGdrive extends Node {
         category: 'Maya Red Gdrive',
         isConfig: false,
         fields: {
+            session: GdriveAuth,
             query: {
                 type: String,
                 defaultValue: ''
@@ -39,6 +41,7 @@ class SearchGdrive extends Node {
         // be sent as the message to any further nodes.
         this.setStatus("PROGRESS", "fetching drive files...");
         var fetch = require("node-fetch"); // or fetch() is native in browsers
+        console.log(vals)
         try{
             let res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${encodeURI(vals.query)}&includeItemsFromAllDrives=${vals.includeItemsFromAllDrives}&supportsTeamDrives=${vals.includeItemsFromAllDrives}&pageSize=${vals.pageSize}${vals.pageToken && vals.pageToken!== '' ? `&pageToken=${vals.pageToken}` : ''}`, 
             {
