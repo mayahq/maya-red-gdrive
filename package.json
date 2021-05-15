@@ -1,0 +1,32 @@
+{
+  "name": "maya-red-gdrive",
+  "version": "1.0.0",
+  "description": "Google Drive module to manage google drive files",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mayahq/mayadev/issues"
+  },
+  "homepage": "#readme",
+  "dependencies": {
+    "@mayahq/module-sdk": "^0.1.0",
+    "crypto": "^1.0.1",
+    "fastmq": "^1.3.8",
+    "node-fetch": "^2.6.1",
+    "node-schedule": "^2.0.0"
+  },
+  "nodepath": "src/nodes",
+  "nodeRedModuleName": "maya-red-gdrive",
+  "node-red": {
+    "nodes": {
+      "gdrive-auth": "src/nodes/gdriveAuth/gdriveAuth.node.js",
+      "search-gdrive": "src/nodes/searchGdrive/searchGdrive.node.js"
+    }
+  }
+}

@@ -1,0 +1,72 @@
+<script type='text/javascript'>
+    RED.nodes.registerType("gdrive-auth", {
+        category: "config",
+        color: "#8BBDD9",
+        defaults: {
+            name: {
+                value: ""
+            },
+        },
+        credentials: {
+            access_token: {
+                type: String
+            },
+            expiry_date: {
+                type: Number
+            },
+            referenceId: {
+                type: String
+            }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "fa-file-code-o.png",
+        label: function() {
+            return this.name || "gdrive-auth"
+        },
+        paletteLabel: "gdrive-auth",
+        exportable: true,
+        oneditprepare: function() {},
+        oneditsave: function() {
+            var trimFields = []
+
+            trimFields.forEach(function(field) {
+                const selector = `node-config-input-${field.name}`
+                let v = $(selector).val()
+                v = v.trim()
+                $(selector).val(v)
+            })
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="gdrive-auth">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" style="width:70%;" placeholder="Name" />
+    </div>
+                                            
+                                        <div class="form-row">
+    <label for="node-config-input-access_token">access_token</label>
+    <input type="password" id="node-config-input-access_token"></input>
+     
+</div> 
+              
+                                    <div class="form-row">
+    <label for="node-config-input-expiry_date">expiry_date</label>
+    <input type="text" id="node-config-input-expiry_date"></input>
+    <input type="hidden" id="node-config-input-payloadTypeexpiry_date">
+</div> 
+              
+                                    <div class="form-row">
+    <label for="node-config-input-referenceId">referenceId</label>
+    <input type="password" id="node-config-input-referenceId"></input>
+     
+</div> 
+              
+         
+    </script>
+
+<script type="text/x-red" data-help-name="gdrive-auth">
+    <p> Enter documentation here </p>
+</script>

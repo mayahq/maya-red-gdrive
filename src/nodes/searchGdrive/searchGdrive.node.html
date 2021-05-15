@@ -1,0 +1,166 @@
+<script type='text/javascript'>
+    RED.nodes.registerType("search-gdrive", {
+        category: "Maya Red Gdrive",
+        color: "#8BBDD9",
+        defaults: {
+            name: {
+                value: ""
+            },
+            query: {
+                value: ""
+            },
+            payloadTypequery: {
+                value: "global"
+            },
+            includeItemsFromAllDrives: {
+                value: ""
+            },
+            payloadTypeincludeItemsFromAllDrives: {
+                value: "global"
+            },
+            pageSize: {
+                value: 0
+            },
+            payloadTypepageSize: {
+                value: "global"
+            },
+            pageToken: {
+                value: ""
+            },
+            payloadTypepageToken: {
+                value: "global"
+            },
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "fa-file-code-o.png",
+        label: function() {
+            return this.name || "search-gdrive"
+        },
+        paletteLabel: "search-gdrive",
+        exportable: true,
+        oneditprepare: function() {
+
+            if (this.payloadTypequery === null) {
+                if (this.query === "") {
+                    this.payloadTypequery = "date"
+                } else {
+                    this.payloadTypequery = "str"
+                }
+            } else if (this.payloadTypequery === 'string' || this.payloadTypequery === 'none') {
+                this.payloadTypequery = "str"
+            }
+
+            $("#node-input-payloadTypequery").val(this.payloadTypequery)
+            $("#node-input-query").typedInput({
+                default: "str",
+                typeField: $("#node-input-payloadTypequery"),
+                types: ["flow", "global", "msg", "str"]
+            })
+            $("#node-input-query").typedInput("type", this.payloadTypequery)
+
+
+            if (this.payloadTypeincludeItemsFromAllDrives === null) {
+                if (this.includeItemsFromAllDrives === "") {
+                    this.payloadTypeincludeItemsFromAllDrives = "date"
+                } else {
+                    this.payloadTypeincludeItemsFromAllDrives = "str"
+                }
+            } else if (this.payloadTypeincludeItemsFromAllDrives === 'string' || this.payloadTypeincludeItemsFromAllDrives === 'none') {
+                this.payloadTypeincludeItemsFromAllDrives = "str"
+            }
+
+            $("#node-input-payloadTypeincludeItemsFromAllDrives").val(this.payloadTypeincludeItemsFromAllDrives)
+            $("#node-input-includeItemsFromAllDrives").typedInput({
+                default: "str",
+                typeField: $("#node-input-payloadTypeincludeItemsFromAllDrives"),
+                types: ["flow", "global", "msg", "str"]
+            })
+            $("#node-input-includeItemsFromAllDrives").typedInput("type", this.payloadTypeincludeItemsFromAllDrives)
+
+
+            if (this.payloadTypepageSize === null) {
+                if (this.pageSize === "") {
+                    this.payloadTypepageSize = "date"
+                } else {
+                    this.payloadTypepageSize = "num"
+                }
+            } else if (this.payloadTypepageSize === 'string' || this.payloadTypepageSize === 'none') {
+                this.payloadTypepageSize = "num"
+            }
+
+            $("#node-input-payloadTypepageSize").val(this.payloadTypepageSize)
+            $("#node-input-pageSize").typedInput({
+                default: "num",
+                typeField: $("#node-input-payloadTypepageSize"),
+                types: ["flow", "global", "msg", "num"]
+            })
+            $("#node-input-pageSize").typedInput("type", this.payloadTypepageSize)
+
+
+            if (this.payloadTypepageToken === null) {
+                if (this.pageToken === "") {
+                    this.payloadTypepageToken = "date"
+                } else {
+                    this.payloadTypepageToken = "str"
+                }
+            } else if (this.payloadTypepageToken === 'string' || this.payloadTypepageToken === 'none') {
+                this.payloadTypepageToken = "str"
+            }
+
+            $("#node-input-payloadTypepageToken").val(this.payloadTypepageToken)
+            $("#node-input-pageToken").typedInput({
+                default: "str",
+                typeField: $("#node-input-payloadTypepageToken"),
+                types: ["flow", "global", "msg", "str"]
+            })
+            $("#node-input-pageToken").typedInput("type", this.payloadTypepageToken)
+
+        },
+        oneditsave: function() {
+            var trimFields = []
+
+            trimFields.forEach(function(field) {
+                const selector = `node-input-${field.name}`
+                let v = $(selector).val()
+                v = v.trim()
+                $(selector).val(v)
+            })
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="search-gdrive">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" style="width:70%;" placeholder="Name" />
+    </div>
+                        <div class="form-row">
+    <label for="node-input-query">query</label>
+    <input type="text" id="node-input-query"></input>
+            <input type="hidden" id="node-input-payloadTypequery">
+     
+</div>
+                                <div class="form-row">
+    <label for="node-input-includeItemsFromAllDrives">includeItemsFromAllDrives</label>
+    <input type="text" id="node-input-includeItemsFromAllDrives"></input>
+            <input type="hidden" id="node-input-payloadTypeincludeItemsFromAllDrives">
+     
+</div>
+                                <div class="form-row">
+    <label for="node-input-pageSize">pageSize</label>
+    <input type="text" id="node-input-pageSize"></input>
+    <input type="hidden" id="node-input-payloadTypepageSize">
+</div>
+                                <div class="form-row">
+    <label for="node-input-pageToken">pageToken</label>
+    <input type="text" id="node-input-pageToken"></input>
+            <input type="hidden" id="node-input-payloadTypepageToken">
+     
+</div>
+                
+    </script>
+
+<script type="text/x-red" data-help-name="search-gdrive">
+    <p> Enter documentation here </p>
+</script>
