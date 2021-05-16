@@ -38,7 +38,7 @@ class GdriveAuth extends Node {
         console.log(arguments)
         var requestChannel;
         // create a client with 'requestChannel' channel name and connect to server.
-        FastMQ.Client.connect('requestChannel', fastmqChannel).then((channel) => { // client connected
+        FastMQ.Client.connect('', fastmqChannel, {reconnect: false}).then((channel) => { // client connected
             requestChannel = channel;
             // send request to 'master' channel  with topic 'test_cmd' and JSON format payload.
             let reqPayload = {
@@ -54,6 +54,13 @@ class GdriveAuth extends Node {
             requestChannel.disconnect();
         }).catch((err) => {
             console.log('Got error:', err.stack);
+        }).finally(() => {
+            if(requestChannel){
+                if(!requestChannel._socket.destroyed){
+                    console.log("destroying client socket");
+                    requestChannel.disconnect();
+                }
+            }
         });
     }
 
