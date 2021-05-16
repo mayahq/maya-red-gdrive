@@ -14,9 +14,9 @@ class GdriveAuth extends Node {
         isConfig: true,
         fields: {
             // Whatever custom fields the node needs.
-            fastmqChannel: {value: "master" },
-            fastmqTopic: {value: "refresh" },
-            name: {value: this.name}
+            fastmqChannel: {type: String,defaultVal: "master" },
+            fastmqTopic: {type: String,defaultVal: "refresh" },
+            name: {defaultVal: this.name}
         },
         redOpts: {
             credentials: {
@@ -34,7 +34,31 @@ class GdriveAuth extends Node {
 
     })
 
-    onInit() {
+    refreshCreds (fastmqChannel, fastmqTopic, referenceId, configNodes) {
+        console.log(arguments)
+        var requestChannel;
+        // create a client with 'requestChannel' channel name and connect to server.
+        FastMQ.Client.connect('requestChannel', fastmqChannel).then((channel) => { // client connected
+            requestChannel = channel;
+            // send request to 'master' channel  with topic 'test_cmd' and JSON format payload.
+            let reqPayload = {
+                data: {
+                    referenceId: referenceId,
+                    configNodes: configNodes
+                }
+            };
+            return requestChannel.request(fastmqChannel, fastmqTopic, reqPayload, 'json');
+        }).then((result) => {
+            console.log('Got response from master, data:' + result.payload.data);
+            // client channel disconnect
+            requestChannel.disconnect();
+        }).catch((err) => {
+            console.log('Got error:', err.stack);
+        });
+    }
+
+    onInit(RED) {
+        this.credentials = RED.nodes.getCredentials(this.redNode.id);
         // Do something on initialization of node
         var localUserCache = {};
         if (this.credentials.access_token && this.credentials.expiry_date) {
@@ -43,34 +67,14 @@ class GdriveAuth extends Node {
             if (localUserCache.hasOwnProperty(this.credHash)) {
                 this.localIdentityPromise = Promise.resolve(localUserCache[this.credHash]);
             } else {
-                self.warn("Failed to authenticate with Google");
+                this.warn("Failed to authenticate with Google");
             }
             if(this.credentials.expiry_date < Date.now()){
-                refreshCreds(this.fastmqChannel, this.fastmqTopic, this.credentials.referenceId);
+                this.refreshCreds(this.redNode.fastmqChannel, this.redNode.fastmqTopic, this.credentials.referenceId, [this.redNode.name])
             }
-
-            function refreshCreds (fastmqChannel, fastmqTopic, referenceId) {
-                var requestChannel;
-                // create a client with 'requestChannel' channel name and connect to server.
-                FastMQ.Client.connect('requestChannel', fastmqChannel).then((channel) => { // client connected
-                    requestChannel = channel;
-                    // send request to 'master' channel  with topic 'test_cmd' and JSON format payload.
-                    let reqPayload = {
-                        data: {
-                            referenceId: referenceId,
-                            configNodes: [this.name]
-                        }
-                    };
-                    return requestChannel.request(fastmqChannel, fastmqTopic, reqPayload, 'json');
-                }).then((result) => {
-                    console.log('Got response from master, data:' + result.payload.data);
-                    // client channel disconnect
-                    requestChannel.disconnect();
-                }).catch((err) => {
-                    console.log('Got error:', err.stack);
-                });
-            }
-            nodeSchedule.scheduleJob(new Date(this.credentials.expiry_date - 5000), function () {refreshCreds(this.fastmqChannel, this.fastmqTopic, this.credentials.referenceId)});
+            nodeSchedule.scheduleJob(new Date(this.credentials.expiry_date - 5000), function () {
+                this.refreshCreds(this.redNode.fastmqChannel, this.redNode.fastmqTopic, this.credentials.referenceId, [this.redNode.name])
+            });
         }
     }
 

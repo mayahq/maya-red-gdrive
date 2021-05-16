@@ -14,19 +14,19 @@ class SearchGdrive extends Node {
             session: GdriveAuth,
             query: {
                 type: String,
-                defaultValue: ''
+                defaultVal: ''
             },
             includeItemsFromAllDrives: {
                 type: String,
-                defaultValue: 'true'
+                defaultVal: 'true'
             },
             pageSize: {
                 type: Number,
-                defaultValue: 10
+                defaultVal: 10
             },
             pageToken: {
                 type: String,
-                defaultValue: ''
+                defaultVal: ''
             }
         },
 
