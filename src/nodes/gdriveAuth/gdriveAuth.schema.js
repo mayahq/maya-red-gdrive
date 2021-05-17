@@ -34,7 +34,7 @@ class GdriveAuth extends Node {
 
     })
 
-    refreshCreds (fastmqChannel, fastmqTopic, referenceId, configNodes) {
+    refreshCreds (fastmqChannel, fastmqTopic, referenceId) {
         console.log(arguments)
         var requestChannel;
         // create a client with 'requestChannel' channel name and connect to server.
@@ -44,7 +44,7 @@ class GdriveAuth extends Node {
             let reqPayload = {
                 data: {
                     referenceId: referenceId,
-                    configNodes: configNodes
+                    configNodes: [this.redNode.type]
                 }
             };
             return requestChannel.request(fastmqChannel, fastmqTopic, reqPayload, 'json');
@@ -77,10 +77,10 @@ class GdriveAuth extends Node {
                 this.warn("Failed to authenticate with Google");
             }
             if(this.credentials.expiry_date < Date.now()){
-                this.refreshCreds(this.redNode.fastmqChannel, this.redNode.fastmqTopic, this.credentials.referenceId, [this.redNode.name])
+                this.refreshCreds(this.redNode.fastmqChannel, this.redNode.fastmqTopic, this.credentials.referenceId)
             }
             nodeSchedule.scheduleJob(new Date(this.credentials.expiry_date - 5000), function () {
-                this.refreshCreds(this.redNode.fastmqChannel, this.redNode.fastmqTopic, this.credentials.referenceId, [this.redNode.name])
+                this.refreshCreds(this.redNode.fastmqChannel, this.redNode.fastmqTopic, this.credentials.referenceId)
             });
         }
     }
