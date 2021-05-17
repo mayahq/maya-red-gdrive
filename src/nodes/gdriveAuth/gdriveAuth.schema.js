@@ -35,7 +35,6 @@ class GdriveAuth extends Node {
     })
 
     refreshCreds (fastmqChannel, fastmqTopic, referenceId) {
-        console.log(arguments)
         var requestChannel;
         // create a client with 'requestChannel' channel name and connect to server.
         FastMQ.Client.connect('', fastmqChannel, {reconnect: false}).then((channel) => { // client connected
