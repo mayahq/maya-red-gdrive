@@ -6,6 +6,9 @@
             name: {
                 value: ""
             },
+            isProfileConfigNode: {
+                value: false
+            },
             session: {
                 value: "",
                 type: "gdrive-auth"
@@ -14,25 +17,25 @@
                 value: ""
             },
             payloadTypequery: {
-                value: "global"
+                value: "str"
             },
             includeItemsFromAllDrives: {
                 value: "true"
             },
             payloadTypeincludeItemsFromAllDrives: {
-                value: "global"
+                value: "bool"
             },
             pageSize: {
-                value: 10
+                value: "10"
             },
             payloadTypepageSize: {
-                value: "global"
+                value: "num"
             },
             pageToken: {
                 value: ""
             },
             payloadTypepageToken: {
-                value: "global"
+                value: "str"
             },
         },
         inputs: 1,
@@ -44,7 +47,6 @@
         paletteLabel: "search-gdrive",
         exportable: true,
         oneditprepare: function() {
-
             if (this.payloadTypequery === null) {
                 if (this.query === "") {
                     this.payloadTypequery = "date"
@@ -59,29 +61,27 @@
             $("#node-input-query").typedInput({
                 default: "str",
                 typeField: $("#node-input-payloadTypequery"),
-                types: ["flow", "global", "msg", "str"]
+                types: ["msg", "flow", "global", "str"]
             })
             $("#node-input-query").typedInput("type", this.payloadTypequery)
-
 
             if (this.payloadTypeincludeItemsFromAllDrives === null) {
                 if (this.includeItemsFromAllDrives === "") {
                     this.payloadTypeincludeItemsFromAllDrives = "date"
                 } else {
-                    this.payloadTypeincludeItemsFromAllDrives = "str"
+                    this.payloadTypeincludeItemsFromAllDrives = "bool"
                 }
             } else if (this.payloadTypeincludeItemsFromAllDrives === 'string' || this.payloadTypeincludeItemsFromAllDrives === 'none') {
-                this.payloadTypeincludeItemsFromAllDrives = "str"
+                this.payloadTypeincludeItemsFromAllDrives = "bool"
             }
 
             $("#node-input-payloadTypeincludeItemsFromAllDrives").val(this.payloadTypeincludeItemsFromAllDrives)
             $("#node-input-includeItemsFromAllDrives").typedInput({
-                default: "str",
+                default: "bool",
                 typeField: $("#node-input-payloadTypeincludeItemsFromAllDrives"),
-                types: ["flow", "global", "msg", "str"]
+                types: ["msg", "flow", "global", "bool"]
             })
             $("#node-input-includeItemsFromAllDrives").typedInput("type", this.payloadTypeincludeItemsFromAllDrives)
-
 
             if (this.payloadTypepageSize === null) {
                 if (this.pageSize === "") {
@@ -97,10 +97,9 @@
             $("#node-input-pageSize").typedInput({
                 default: "num",
                 typeField: $("#node-input-payloadTypepageSize"),
-                types: ["flow", "global", "msg", "num"]
+                types: ["msg", "flow", "global", "num"]
             })
             $("#node-input-pageSize").typedInput("type", this.payloadTypepageSize)
-
 
             if (this.payloadTypepageToken === null) {
                 if (this.pageToken === "") {
@@ -116,58 +115,50 @@
             $("#node-input-pageToken").typedInput({
                 default: "str",
                 typeField: $("#node-input-payloadTypepageToken"),
-                types: ["flow", "global", "msg", "str"]
+                types: ["msg", "flow", "global", "str"]
             })
             $("#node-input-pageToken").typedInput("type", this.payloadTypepageToken)
 
         },
-        oneditsave: function() {
-            var trimFields = []
-
-            trimFields.forEach(function(field) {
-                const selector = `node-input-${field.name}`
-                let v = $(selector).val()
-                v = v.trim()
-                $(selector).val(v)
-            })
-        }
+        oneditsave: function() {},
+        oneditcancel: function() {},
+        oneditdelete: function() {},
+        oneditresize: function() {},
+        onpaletteadd: function() {},
+        onpaletteremove: function() {}
     });
 </script>
 
-<script type="text/x-red" data-template-name="search-gdrive">
+<script type="text/html" data-template-name="search-gdrive">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" style="width:70%;" placeholder="Name" />
     </div>
-                        <div class="form-row">
-    <label for="node-input-session">session</label>
-    <input type="text" id="node-input-session"></input>
-</div>
-                                <div class="form-row">
-    <label for="node-input-query">query</label>
-    <input type="text" id="node-input-query"></input>
-            <input type="hidden" id="node-input-payloadTypequery">
-     
-</div>
-                                <div class="form-row">
-    <label for="node-input-includeItemsFromAllDrives">includeItemsFromAllDrives</label>
-    <input type="text" id="node-input-includeItemsFromAllDrives"></input>
-            <input type="hidden" id="node-input-payloadTypeincludeItemsFromAllDrives">
-     
-</div>
-                                <div class="form-row">
-    <label for="node-input-pageSize">pageSize</label>
-    <input type="text" id="node-input-pageSize"></input>
-    <input type="hidden" id="node-input-payloadTypepageSize">
-</div>
-                                <div class="form-row">
-    <label for="node-input-pageToken">pageToken</label>
-    <input type="text" id="node-input-pageToken"></input>
-            <input type="hidden" id="node-input-payloadTypepageToken">
-     
-</div>
-                
-    </script>
+    <div class="form-row">
+        <label for="node-input-session">session</label>
+        <input type="text" id="node-input-session"></input>
+    </div>
+    <div class="form-row">
+        <label for="node-input-query">query</label>
+        <input type="text" id="node-input-query"></input>
+        <input type="hidden" id="node-input-payloadTypequery">
+    </div>
+    <div class="form-row">
+        <label for="node-input-includeItemsFromAllDrives">includeItemsFromAllDrives</label>
+        <input type="text" id="node-input-includeItemsFromAllDrives"></input>
+        <input type="hidden" id="node-input-payloadTypeincludeItemsFromAllDrives">
+    </div>
+    <div class="form-row">
+        <label for="node-input-pageSize">pageSize</label>
+        <input type="text" id="node-input-pageSize"></input>
+        <input type="hidden" id="node-input-payloadTypepageSize">
+    </div>
+    <div class="form-row">
+        <label for="node-input-pageToken">pageToken</label>
+        <input type="text" id="node-input-pageToken"></input>
+        <input type="hidden" id="node-input-payloadTypepageToken">
+    </div>
+</script>
 
 <script type="text/x-red" data-help-name="search-gdrive">
     <p> Enter documentation here </p>

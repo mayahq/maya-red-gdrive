@@ -1,6 +1,7 @@
 const {
     Node,
-    Schema
+    Schema,
+    fields
 } = require('@mayahq/module-sdk')
 const FastMQ = require('fastmq');
 const nodeSchedule = require("node-schedule");
@@ -14,21 +15,14 @@ class GdriveAuth extends Node {
         isConfig: true,
         fields: {
             // Whatever custom fields the node needs.
-            fastmqChannel: {type: String,defaultVal: "master" },
-            fastmqTopic: {type: String,defaultVal: "refresh" },
-            name: {defaultVal: this.name}
+            fastmqChannel: new fields.Typed({type: 'str', defaultVal: 'master'}),
+            fastmqTopic: new fields.Typed({type: 'str', defaultVal: 'topic'}),
         },
         redOpts: {
             credentials: {
-                access_token: {
-                    type: String
-                },
-                expiry_date: {
-                    type: Number
-                },
-                referenceId: {
-                    type: String
-                }
+                access_token: new fields.Credential({type: 'str', password: true}),
+                expiry_date: new fields.Credential({type: 'num', hidden: true}),
+                referenceId: new fields.Credential({type: 'str', password: true}),
             }
         }
 
@@ -43,7 +37,7 @@ class GdriveAuth extends Node {
             let reqPayload = {
                 data: {
                     referenceId: referenceId,
-                    configNodes: [this.redNode.type]
+                    configNodes: [this._node.type]
                 }
             };
             return requestChannel.request(fastmqChannel, fastmqTopic, reqPayload, 'json');
@@ -63,12 +57,11 @@ class GdriveAuth extends Node {
         });
     }
 
-    onInit(RED) {
-        this.credentials = RED.nodes.getCredentials(this.redNode.id);
+    onInit() {
         // Do something on initialization of node
         var localUserCache = {};
-        if (this.credentials.access_token && this.credentials.expiry_date) {
-            this.credHash = crypto.createHash('sha1').update(this.credentials.access_token).digest('base64');
+        if (this.credentials._self.access_token && this.credentials._self.expiry_date) {
+            this.credHash = crypto.createHash('sha1').update(this.credentials._self.access_token).digest('base64');
             localUserCache[this.credHash] = this.name;
             if (localUserCache.hasOwnProperty(this.credHash)) {
                 this.localIdentityPromise = Promise.resolve(localUserCache[this.credHash]);
@@ -76,10 +69,10 @@ class GdriveAuth extends Node {
                 this.warn("Failed to authenticate with Google");
             }
             if(this.credentials.expiry_date < Date.now()){
-                this.refreshCreds(this.redNode.fastmqChannel, this.redNode.fastmqTopic, this.credentials.referenceId)
+                this.refreshCreds(this._node.fastmqChannel, this._node.fastmqTopic, this.credentials._self.referenceId)
             }
             nodeSchedule.scheduleJob(new Date(this.credentials.expiry_date - 5000), function () {
-                this.refreshCreds(this.redNode.fastmqChannel, this.redNode.fastmqTopic, this.credentials.referenceId)
+                this.refreshCreds(this._node.fastmqChannel, this._node.fastmqTopic, this.credentials._self.referenceId)
             });
         }
     }

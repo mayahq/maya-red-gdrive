@@ -6,17 +6,20 @@
             name: {
                 value: ""
             },
+            isProfileConfigNode: {
+                value: false
+            },
             fastmqChannel: {
                 value: "master"
             },
             payloadTypefastmqChannel: {
-                value: "global"
+                value: "str"
             },
             fastmqTopic: {
-                value: "refresh"
+                value: "topic"
             },
             payloadTypefastmqTopic: {
-                value: "global"
+                value: "str"
             },
         },
         credentials: {
@@ -28,7 +31,7 @@
             },
             referenceId: {
                 type: String
-            }
+            },
         },
         inputs: 1,
         outputs: 1,
@@ -39,7 +42,6 @@
         paletteLabel: "gdrive-auth",
         exportable: true,
         oneditprepare: function() {
-
             if (this.payloadTypefastmqChannel === null) {
                 if (this.fastmqChannel === "") {
                     this.payloadTypefastmqChannel = "date"
@@ -50,14 +52,13 @@
                 this.payloadTypefastmqChannel = "str"
             }
 
-            $("#node-input-payloadTypefastmqChannel").val(this.payloadTypefastmqChannel)
-            $("#node-input-fastmqChannel").typedInput({
+            $("#node-config-input-payloadTypefastmqChannel").val(this.payloadTypefastmqChannel)
+            $("#node-config-input-fastmqChannel").typedInput({
                 default: "str",
-                typeField: $("#node-input-payloadTypefastmqChannel"),
-                types: ["flow", "global", "msg", "str"]
+                typeField: $("#node-config-input-payloadTypefastmqChannel"),
+                types: ["str"]
             })
-            $("#node-input-fastmqChannel").typedInput("type", this.payloadTypefastmqChannel)
-
+            $("#node-config-input-fastmqChannel").typedInput("type", this.payloadTypefastmqChannel)
 
             if (this.payloadTypefastmqTopic === null) {
                 if (this.fastmqTopic === "") {
@@ -69,66 +70,48 @@
                 this.payloadTypefastmqTopic = "str"
             }
 
-            $("#node-input-payloadTypefastmqTopic").val(this.payloadTypefastmqTopic)
-            $("#node-input-fastmqTopic").typedInput({
+            $("#node-config-input-payloadTypefastmqTopic").val(this.payloadTypefastmqTopic)
+            $("#node-config-input-fastmqTopic").typedInput({
                 default: "str",
-                typeField: $("#node-input-payloadTypefastmqTopic"),
-                types: ["flow", "global", "msg", "str"]
+                typeField: $("#node-config-input-payloadTypefastmqTopic"),
+                types: ["str"]
             })
-            $("#node-input-fastmqTopic").typedInput("type", this.payloadTypefastmqTopic)
+            $("#node-config-input-fastmqTopic").typedInput("type", this.payloadTypefastmqTopic)
 
         },
-        oneditsave: function() {
-            var trimFields = []
-
-            trimFields.forEach(function(field) {
-                const selector = `node-config-input-${field.name}`
-                let v = $(selector).val()
-                v = v.trim()
-                $(selector).val(v)
-            })
-        }
+        oneditsave: function() {},
+        oneditcancel: function() {},
+        oneditdelete: function() {},
+        oneditresize: function() {},
+        onpaletteadd: function() {},
+        onpaletteremove: function() {}
     });
 </script>
 
-<script type="text/x-red" data-template-name="gdrive-auth">
+<script type="text/html" data-template-name="gdrive-auth">
     <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" style="width:70%;" placeholder="Name" />
     </div>
-                        <div class="form-row">
-    <label for="node-config-input-fastmqChannel">fastmqChannel</label>
-    <input type="text" id="node-config-input-fastmqChannel"></input>
-            <input type="hidden" id="node-config-input-payloadTypefastmqChannel">
-     
-</div>
-                                <div class="form-row">
-    <label for="node-config-input-fastmqTopic">fastmqTopic</label>
-    <input type="text" id="node-config-input-fastmqTopic"></input>
-            <input type="hidden" id="node-config-input-payloadTypefastmqTopic">
-     
-</div>
-                            
-                                        <div class="form-row">
-    <label for="node-config-input-access_token">access_token</label>
-    <input type="password" id="node-config-input-access_token"></input>
-     
-</div> 
-              
-                                    <div class="form-row">
-    <label for="node-config-input-expiry_date">expiry_date</label>
-    <input type="text" id="node-config-input-expiry_date"></input>
-    <input type="hidden" id="node-config-input-payloadTypeexpiry_date">
-</div> 
-              
-                                    <div class="form-row">
-    <label for="node-config-input-referenceId">referenceId</label>
-    <input type="password" id="node-config-input-referenceId"></input>
-     
-</div> 
-              
-         
-    </script>
+    <div class="form-row">
+        <label for="node-config-input-fastmqChannel">fastmqChannel</label>
+        <input type="text" id="node-config-input-fastmqChannel"></input>
+        <input type="hidden" id="node-config-input-payloadTypefastmqChannel">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-fastmqTopic">fastmqTopic</label>
+        <input type="text" id="node-config-input-fastmqTopic"></input>
+        <input type="hidden" id="node-config-input-payloadTypefastmqTopic">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-access_token">access_token</label>
+        <input type="password" id="node-config-input-access_token"></input>
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-referenceId">referenceId</label>
+        <input type="password" id="node-config-input-referenceId"></input>
+    </div>
+</script>
 
 <script type="text/x-red" data-help-name="gdrive-auth">
     <p> Enter documentation here </p>

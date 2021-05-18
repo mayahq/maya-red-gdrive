@@ -1,6 +1,7 @@
 const {
     Node,
-    Schema
+    Schema,
+    fields
 } = require('@mayahq/module-sdk')
 const GdriveAuth = require("../gdriveAuth/gdriveAuth.schema");
 
@@ -11,23 +12,11 @@ class SearchGdrive extends Node {
         category: 'Maya Red Gdrive',
         isConfig: false,
         fields: {
-            session: GdriveAuth,
-            query: {
-                type: String,
-                defaultVal: ''
-            },
-            includeItemsFromAllDrives: {
-                type: String,
-                defaultVal: 'true'
-            },
-            pageSize: {
-                type: Number,
-                defaultVal: 10
-            },
-            pageToken: {
-                type: String,
-                defaultVal: ''
-            }
+            session: new fields.ConfigNode({type: GdriveAuth}),
+            query: new fields.Typed({type: 'str', defaultVal: '', allowedTypes: ['msg', 'flow', 'global']}),
+            includeItemsFromAllDrives: new fields.Typed({type: 'bool', defaultVal: true, allowedTypes: ['msg', 'flow', 'global']}),
+            pageSize: new fields.Typed({type: 'num', defaultVal: 10, allowedTypes: ['msg', 'flow', 'global']}),
+            pageToken: new fields.Typed({type: 'str', defaultVal: '', allowedTypes: ['msg', 'flow', 'global']}),
         },
 
     })
@@ -41,7 +30,6 @@ class SearchGdrive extends Node {
         // be sent as the message to any further nodes.
         this.setStatus("PROGRESS", "fetching drive files...");
         var fetch = require("node-fetch"); // or fetch() is native in browsers
-        console.log(vals)
         try{
             let res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${encodeURI(vals.query)}&includeItemsFromAllDrives=${vals.includeItemsFromAllDrives}&supportsTeamDrives=${vals.includeItemsFromAllDrives}&pageSize=${vals.pageSize}${vals.pageToken && vals.pageToken!== '' ? `&pageToken=${vals.pageToken}` : ''}`, 
             {
