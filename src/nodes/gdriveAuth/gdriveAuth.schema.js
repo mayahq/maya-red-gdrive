@@ -28,40 +28,43 @@ class GdriveAuth extends Node {
 
     })
 
-    refreshCreds (fastmqChannel, fastmqTopic, referenceId) {
-        var requestChannel;
-        // create a client with 'requestChannel' channel name and connect to server.
-        FastMQ.Client.connect('', fastmqChannel, {reconnect: false}).then((channel) => { // client connected
-            requestChannel = channel;
-            // send request to 'master' channel  with topic 'test_cmd' and JSON format payload.
-            let reqPayload = {
-                data: {
-                    referenceId: referenceId,
-                    configNodes: [this._node.type]
-                }
-            };
-            return requestChannel.request(fastmqChannel, fastmqTopic, reqPayload, 'json');
-        }).then((result) => {
-            console.log('Got response from master, data:' + result.payload.data);
-            // client channel disconnect
-            requestChannel.disconnect();
-        }).catch((err) => {
-            console.log('Got error:', err.stack);
-        }).finally(() => {
-            if(requestChannel){
-                if(!requestChannel._socket.destroyed){
-                    console.log("destroying client socket");
-                    requestChannel.disconnect();
-                }
-            }
-        });
-    }
-
     onInit() {
         // Do something on initialization of node
+
+        function refreshCreds (fastmqChannel, fastmqTopic, referenceId) {
+            var requestChannel;
+            // create a client with 'requestChannel' channel name and connect to server.
+            FastMQ.Client.connect('', fastmqChannel, {reconnect: false}).then((channel) => { // client connected
+                requestChannel = channel;
+                // send request to 'master' channel  with topic 'test_cmd' and JSON format payload.
+                let reqPayload = {
+                    data: {
+                        referenceId: referenceId,
+                        configNodes: ['gdrive-auth']
+                    }
+                };
+                return requestChannel.request(fastmqChannel, fastmqTopic, reqPayload, 'json');
+            }).then((result) => {
+                console.log('Got response from master, data:' + result.payload.data);
+                // client channel disconnect
+                requestChannel.disconnect();
+            }).catch((err) => {
+                console.log('Got error:', err.stack);
+            }).finally(() => {
+                if(requestChannel){
+                    if(!requestChannel._socket.destroyed){
+                        console.log("destroying client socket");
+                        requestChannel.disconnect();
+                    }
+                }
+            });
+        }
+        
         var localUserCache = {};
-        if (this.credentials._self.access_token && this.credentials._self.expiry_date) {
-            this.credHash = crypto.createHash('sha1').update(this.credentials._self.access_token).digest('base64');
+        const node = this._node;
+        const credentials = this.credentials._self;
+        if (credentials.access_token && credentials.expiry_date) {
+            this.credHash = crypto.createHash('sha1').update(credentials.access_token).digest('base64');
             localUserCache[this.credHash] = this.name;
             if (localUserCache.hasOwnProperty(this.credHash)) {
                 this.localIdentityPromise = Promise.resolve(localUserCache[this.credHash]);
@@ -69,10 +72,10 @@ class GdriveAuth extends Node {
                 this.warn("Failed to authenticate with Google");
             }
             if(this.credentials.expiry_date < Date.now()){
-                this.refreshCreds(this._node.fastmqChannel, this._node.fastmqTopic, this.credentials._self.referenceId)
+                refreshCreds(node.fastmqChannel, node.fastmqTopic, credentials.referenceId)
             }
             nodeSchedule.scheduleJob(new Date(this.credentials.expiry_date - 5000), function () {
-                this.refreshCreds(this._node.fastmqChannel, this._node.fastmqTopic, this.credentials._self.referenceId)
+                refreshCreds(node.fastmqChannel, node.fastmqTopic, credentials.referenceId)
             });
         }
     }
