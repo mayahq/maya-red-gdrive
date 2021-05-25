@@ -1,5 +1,6 @@
-const SearchGdrive = require('./searchGdrive.schema')
+const NodeClass = require('./searchGdrive.schema')
+const {
+    nodefn
+} = require('@mayahq/module-sdk')
 
-const node = new SearchGdrive()
-const fn = (RED) => node.config(RED)
-module.exports = fn
+module.exports = nodefn(NodeClass)

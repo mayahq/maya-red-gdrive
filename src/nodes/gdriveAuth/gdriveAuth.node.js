@@ -1,5 +1,6 @@
-const GdriveAuth = require('./gdriveAuth.schema')
+const NodeClass = require('./gdriveAuth.schema')
+const {
+    nodefn
+} = require('@mayahq/module-sdk')
 
-const node = new GdriveAuth()
-const fn = (RED) => node.config(RED)
-module.exports = fn
+module.exports = nodefn(NodeClass)
