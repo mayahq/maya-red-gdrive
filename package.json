@@ -26,7 +26,8 @@
   "node-red": {
     "nodes": {
       "gdrive-auth": "src/nodes/gdriveAuth/gdriveAuth.node.js",
-      "search-gdrive": "src/nodes/searchGdrive/searchGdrive.node.js"
+      "search-gdrive": "src/nodes/searchGdrive/searchGdrive.node.js",
+      "gsheet-append": "src/nodes/gsheetAppend/gsheetAppend.node.js"
     }
   }
 }

@@ -1,0 +1,230 @@
+<script type='text/javascript'>
+    RED.nodes.registerType("gsheet-append", {
+        category: "Maya Red Gdrive",
+        color: "#8BBDD9",
+        defaults: {
+            name: {
+                value: ""
+            },
+            isProfileConfigNode: {
+                value: false
+            },
+            session: {
+                value: "",
+                type: "gdrive-auth"
+            },
+            spreadsheetId: {
+                value: ""
+            },
+            payloadTypespreadsheetId: {
+                value: "str"
+            },
+            range: {
+                value: ""
+            },
+            payloadTyperange: {
+                value: "str"
+            },
+            values: {
+                value: ""
+            },
+            payloadTypevalues: {
+                value: "str"
+            },
+            majorDimension: {
+                value: "ROWS"
+            },
+            valueInputOption: {
+                value: "USER_ENTERED"
+            },
+            insertDataOption: {
+                value: "INSERT_ROWS"
+            },
+            responseValueRenderOption: {
+                value: "FORMATTED_VALUE"
+            },
+            responseDateTimeRenderOption: {
+                value: "FORMATTED_STRING"
+            },
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "fa-file-code-o.png",
+        label: function() {
+            return this.name || "gsheet-append"
+        },
+        paletteLabel: "gsheet-append",
+        exportable: true,
+        oneditprepare: function() {
+            if (this.payloadTypespreadsheetId === null) {
+                if (this.spreadsheetId === "") {
+                    this.payloadTypespreadsheetId = "date"
+                } else {
+                    this.payloadTypespreadsheetId = "str"
+                }
+            } else if (this.payloadTypespreadsheetId === 'string' || this.payloadTypespreadsheetId === 'none') {
+                this.payloadTypespreadsheetId = "str"
+            }
+
+            $("#node-input-payloadTypespreadsheetId").val(this.payloadTypespreadsheetId)
+            $("#node-input-spreadsheetId").typedInput({
+                default: "str",
+                typeField: $("#node-input-payloadTypespreadsheetId"),
+                types: ["msg", "flow", "global", "str"]
+            })
+            $("#node-input-spreadsheetId").typedInput("type", this.payloadTypespreadsheetId)
+
+            if (this.payloadTyperange === null) {
+                if (this.range === "") {
+                    this.payloadTyperange = "date"
+                } else {
+                    this.payloadTyperange = "str"
+                }
+            } else if (this.payloadTyperange === 'string' || this.payloadTyperange === 'none') {
+                this.payloadTyperange = "str"
+            }
+
+            $("#node-input-payloadTyperange").val(this.payloadTyperange)
+            $("#node-input-range").typedInput({
+                default: "str",
+                typeField: $("#node-input-payloadTyperange"),
+                types: ["msg", "flow", "global", "str"]
+            })
+            $("#node-input-range").typedInput("type", this.payloadTyperange)
+
+            if (this.payloadTypevalues === null) {
+                if (this.values === "") {
+                    this.payloadTypevalues = "date"
+                } else {
+                    this.payloadTypevalues = "str"
+                }
+            } else if (this.payloadTypevalues === 'string' || this.payloadTypevalues === 'none') {
+                this.payloadTypevalues = "str"
+            }
+
+            $("#node-input-payloadTypevalues").val(this.payloadTypevalues)
+            $("#node-input-values").typedInput({
+                default: "str",
+                typeField: $("#node-input-payloadTypevalues"),
+                types: ["msg", "flow", "global", "str"]
+            })
+            $("#node-input-values").typedInput("type", this.payloadTypevalues)
+
+            const majorDimensionselectFieldValues = ["ROWS", "COLUMNS"]
+            majorDimensionselectFieldValues.forEach((val) => {
+                $("#node-input-majorDimension").append($("<option></option>").attr("value", val).text(val))
+            })
+            $("#node-input-majorDimension").val(this.majorDimension)
+
+            const valueInputOptionselectFieldValues = ["RAW", "USER_ENTERED"]
+            valueInputOptionselectFieldValues.forEach((val) => {
+                $("#node-input-valueInputOption").append($("<option></option>").attr("value", val).text(val))
+            })
+            $("#node-input-valueInputOption").val(this.valueInputOption)
+
+            const insertDataOptionselectFieldValues = ["OVERWRITE", "INSERT_ROWS"]
+            insertDataOptionselectFieldValues.forEach((val) => {
+                $("#node-input-insertDataOption").append($("<option></option>").attr("value", val).text(val))
+            })
+            $("#node-input-insertDataOption").val(this.insertDataOption)
+
+            const responseValueRenderOptionselectFieldValues = ["FORMATTED_VALUE", "UNFORMATTED_VALUE", "FORMULA"]
+            responseValueRenderOptionselectFieldValues.forEach((val) => {
+                $("#node-input-responseValueRenderOption").append($("<option></option>").attr("value", val).text(val))
+            })
+            $("#node-input-responseValueRenderOption").val(this.responseValueRenderOption)
+
+            const responseDateTimeRenderOptionselectFieldValues = ["FORMATTED_STRING", "SERIAL_NUMBER"]
+            responseDateTimeRenderOptionselectFieldValues.forEach((val) => {
+                $("#node-input-responseDateTimeRenderOption").append($("<option></option>").attr("value", val).text(val))
+            })
+            $("#node-input-responseDateTimeRenderOption").val(this.responseDateTimeRenderOption)
+
+        },
+        oneditsave: function() {},
+        oneditcancel: function() {},
+        oneditdelete: function() {},
+        oneditresize: function() {},
+        onpaletteadd: function() {},
+        onpaletteremove: function() {}
+    });
+</script>
+
+<script type="text/html" data-template-name="gsheet-append">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" style="width:70%;" placeholder="Name" />
+    </div>
+    <div class="form-row">
+        <label for="node-input-session">session</label>
+        <input type="text" id="node-input-session"></input>
+    </div>
+    <div class="form-row">
+        <label for="node-input-spreadsheetId">spreadsheetId</label>
+        <input type="text" id="node-input-spreadsheetId"></input>
+        <input type="hidden" id="node-input-payloadTypespreadsheetId">
+    </div>
+    <div class="form-row">
+        <label for="node-input-range">range</label>
+        <input type="text" id="node-input-range"></input>
+        <input type="hidden" id="node-input-payloadTyperange">
+    </div>
+    <div class="form-row">
+        <label for="node-input-values">values</label>
+        <input type="text" id="node-input-values"></input>
+        <input type="hidden" id="node-input-payloadTypevalues">
+    </div>
+    <div class="form-row">
+        <label for="node-input-majorDimension">majorDimension</label>
+        <select type="text" id="node-input-majorDimension">
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-valueInputOption">valueInputOption</label>
+        <select type="text" id="node-input-valueInputOption">
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-insertDataOption">insertDataOption</label>
+        <select type="text" id="node-input-insertDataOption">
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-responseValueRenderOption">responseValueRenderOption</label>
+        <select type="text" id="node-input-responseValueRenderOption">
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-responseDateTimeRenderOption">responseDateTimeRenderOption</label>
+        <select type="text" id="node-input-responseDateTimeRenderOption">
+        </select>
+    </div>
+</script>
+
+<script type="text/html" data-help-name="gsheet-append">
+    <h2>Description</h2>
+    <p>Query opens tabs based on criteria like URL, muted status</p>
+
+    <h2>Config</h2>
+    <dl class="message-properties">
+
+        <dt>payload<span class="property-type">various</span></dt>
+        <dd>The configured payload of the message.</dd>
+
+        <dt class="optional">topic <span class="property-type">string</span></dt>
+        <dd>An optional property</dd>
+
+    </dl>
+
+
+    <h2>Outputs</h2>
+    <dl class="message-properties">
+
+        <dt>payload<span class="property-type">various</span></dt>
+        <dd>The configured payload of the message.</dd>
+
+        <dt class="optional">topic <span class="property-type">string</span></dt>
+        <dd>An optional property</dd>
+
+    </dl>
+</script>
