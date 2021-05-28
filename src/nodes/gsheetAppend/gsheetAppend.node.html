@@ -13,10 +13,10 @@
                 value: "",
                 type: "gdrive-auth"
             },
-            spreadsheetId: {
+            url: {
                 value: ""
             },
-            payloadTypespreadsheetId: {
+            payloadTypeurl: {
                 value: "str"
             },
             range: {
@@ -56,23 +56,23 @@
         paletteLabel: "gsheet-append",
         exportable: true,
         oneditprepare: function() {
-            if (this.payloadTypespreadsheetId === null) {
-                if (this.spreadsheetId === "") {
-                    this.payloadTypespreadsheetId = "date"
+            if (this.payloadTypeurl === null) {
+                if (this.url === "") {
+                    this.payloadTypeurl = "date"
                 } else {
-                    this.payloadTypespreadsheetId = "str"
+                    this.payloadTypeurl = "str"
                 }
-            } else if (this.payloadTypespreadsheetId === 'string' || this.payloadTypespreadsheetId === 'none') {
-                this.payloadTypespreadsheetId = "str"
+            } else if (this.payloadTypeurl === 'string' || this.payloadTypeurl === 'none') {
+                this.payloadTypeurl = "str"
             }
 
-            $("#node-input-payloadTypespreadsheetId").val(this.payloadTypespreadsheetId)
-            $("#node-input-spreadsheetId").typedInput({
+            $("#node-input-payloadTypeurl").val(this.payloadTypeurl)
+            $("#node-input-url").typedInput({
                 default: "str",
-                typeField: $("#node-input-payloadTypespreadsheetId"),
+                typeField: $("#node-input-payloadTypeurl"),
                 types: ["msg", "flow", "global", "str"]
             })
-            $("#node-input-spreadsheetId").typedInput("type", this.payloadTypespreadsheetId)
+            $("#node-input-url").typedInput("type", this.payloadTypeurl)
 
             if (this.payloadTyperange === null) {
                 if (this.range === "") {
@@ -160,9 +160,9 @@
         <input type="text" id="node-input-session"></input>
     </div>
     <div class="form-row">
-        <label for="node-input-spreadsheetId">spreadsheetId</label>
-        <input type="text" id="node-input-spreadsheetId"></input>
-        <input type="hidden" id="node-input-payloadTypespreadsheetId">
+        <label for="node-input-url">url</label>
+        <input type="text" id="node-input-url"></input>
+        <input type="hidden" id="node-input-payloadTypeurl">
     </div>
     <div class="form-row">
         <label for="node-input-range">range</label>

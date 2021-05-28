@@ -17,7 +17,7 @@ class GsheetAppend extends Node {
         isConfig: false,
         fields: {
             session: new fields.ConfigNode({type: GdriveAuth}),    
-            spreadsheetId: new fields.Typed({type: 'str', defaultVal: '', allowedTypes: ['msg', 'flow', 'global']}),
+            url: new fields.Typed({type: 'str', defaultVal: '', allowedTypes: ['msg', 'flow', 'global']}),
             range: new fields.Typed({type: 'str', defaultVal: '', allowedTypes: ['msg', 'flow', 'global']}),
             values: new fields.Typed({type: 'str', allowedTypes: ['msg', 'flow', 'global']}),
             majorDimension: new fields.Select({ options: ['ROWS', 'COLUMNS'], defaultVal: 'ROWS' }),
@@ -35,8 +35,10 @@ class GsheetAppend extends Node {
     async onMessage(msg, vals) {
         this.setStatus("PROGRESS", "fetching drive files...");
         var fetch = require("node-fetch"); // or fetch() is native in browsers
+        let len = "https://docs.google.com/spreadsheets/d/".length;
+        let spreadsheetId = vals.url.substring(len,vals.url.indexOf('/',len));
         try{
-            let res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${vals.spreadsheetId}/values/${encodeURI(vals.range)}:append?insertDataOption=${vals.insertDataOption}&responseDateTimeRenderOption=${vals.responseDateTimeRenderOption}&responseValueRenderOption=${vals.responseValueRenderOption}&valueInputOption=${vals.valueInputOption}`, 
+            let res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURI(vals.range)}:append?insertDataOption=${vals.insertDataOption}&responseDateTimeRenderOption=${vals.responseDateTimeRenderOption}&responseValueRenderOption=${vals.responseValueRenderOption}&valueInputOption=${vals.valueInputOption}`, 
             {
                 method: "POST",
                 body:JSON.stringify({
