@@ -75,10 +75,10 @@ class GdriveAuth extends Node {
             } else {
                 this.warn("Failed to authenticate with Google");
             }
-            if(this.credentials.expiry_date < Date.now()){
+            if(credentials.expiry_date < Date.now()){
                 refreshCreds(node.fastmqChannel, node.fastmqTopic, credentials.referenceId)
             }
-            nodeSchedule.scheduleJob(new Date(this.credentials.expiry_date - 5000), function () {
+            nodeSchedule.scheduleJob(new Date(credentials.expiry_date - 5000), function () {
                 refreshCreds(node.fastmqChannel, node.fastmqTopic, credentials.referenceId)
             });
         }
