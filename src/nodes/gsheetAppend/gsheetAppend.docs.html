@@ -1,25 +1,37 @@
 <h2>Description</h2>
-<p>Query opens tabs based on criteria like URL, muted status</p>
+<p>Google Sheet Append node is used to append data to an existing table in a google sheet document</p>
 
-<h2>Config</h2>
+<h2>Session</h2>
+<p>
+    Select or Create a gdrive-auth config node
+</p>
+<h2>Inputs</h2>
 <dl class="message-properties">
 
-    <dt>payload<span class="property-type">various</span></dt>
-    <dd>The configured payload of the message.</dd>
+    <dt>url<span class="property-type">string</span></dt>
+    <dd>URL of google sheet document</dd>
+    <dt>range<span class="property-type">string</span></dt>
+    <dd>The Range of Table in the following format: sheet_name!start_cell:end_cell</dd>
+    <dt>values<span class="property-type">array</span></dt>
+    <dd>2D array of data that needs to be inserted into the sheet</dd>
 
-    <dt class="optional">topic <span class="property-type">string</span></dt>
-    <dd>An optional property</dd>
-
+    <dt class="optional">majorDimension <span class="property-type">enum</span></dt>
+    <dd>ROWS: inserts data horizontally, COLS: inserts data vertically</dd>
+    <dt class="optional">valueInputOption <span class="property-type">enum</span></dt>
+    <dd>How the input data should be interpreted. </dd>
+    <dt class="optional">insertDataOption <span class="property-type">enum</span></dt>
+    <dd>How the input data should be inserted.</dd>
+    <dt class="optional">responseValueRenderOption <span class="property-type">enum</span></dt>
+    <dd>Determines how values in the response should be rendered. </dd>
+    <dt class="optional">responseDateTimeRenderOption <span class="property-type">enum</span></dt>
+    <dd>Determines how dates, times, and durations in the response should be rendered. This is ignored if responseValueRenderOption is FORMATTED_VALUE. </dd>
+    
 </dl>
-
 
 <h2>Outputs</h2>
 <dl class="message-properties">
 
     <dt>payload<span class="property-type">various</span></dt>
-    <dd>The configured payload of the message.</dd>
-
-    <dt class="optional">topic <span class="property-type">string</span></dt>
-    <dd>An optional property</dd>
+    <dd>Contains the http response from gsheet append values api</dd>
     
 </dl>

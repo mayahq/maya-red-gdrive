@@ -1,0 +1,29 @@
+<h2>Description</h2>
+<p>This node searches for files and folders in your google drive based on an input query</p>
+
+<h2>Session</h2>
+<p>
+    Select or Create a gdrive-auth config node
+<p>
+<h2>Inputs</h2>
+<dl class="message-properties">
+
+    <dt>query<span class="property-type">string</span></dt>
+    <dd>search query combining one or more search terms</dd>
+    <dt>includeItemsFromAllDrives<span class="property-type">bool</span></dt>
+    <dd>Whether both My Drive and shared drive items should be included in results. </dd>
+    <dt>pageSize<span class="property-type">num</span></dt>
+    <dd>The maximum number of files to return per page. Partial or empty result pages are possible even before the end of the files list has been reached. Acceptable values are 1 to 1000, inclusive. (Default: 100)</dd>
+
+    <dt class="optional">pageToken <span class="property-type">string</span></dt>
+    <dd>The token for continuing a previous list request on the next page. This should be set to the value of 'nextPageToken' from the previous response.</dd>
+    
+</dl>
+
+<h2>Outputs</h2>
+<dl class="message-properties">
+
+    <dt>payload<span class="property-type">various</span></dt>
+    <dd>Contains the list of files that match the query</dd>
+    
+</dl>
