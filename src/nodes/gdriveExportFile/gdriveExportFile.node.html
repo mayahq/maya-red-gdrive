@@ -1,0 +1,178 @@
+<script type='text/javascript'>
+    RED.nodes.registerType("Export File", {
+        category: "Maya Red Gdrive",
+        color: "#FDF0C2",
+        defaults: {
+            name: {
+                value: ""
+            },
+            isProfileConfigNode: {
+                value: false
+            },
+            session: {
+                value: "",
+                type: "gdrive-auth"
+            },
+            fileId: {
+                value: ""
+            },
+            payloadTypefileId: {
+                value: "str"
+            },
+            sheetType: {
+                value: "xlsx"
+            },
+            docType: {
+                value: "docx"
+            },
+            slideType: {
+                value: "pptx"
+            },
+            documentType: {
+                value: "sheet"
+            },
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "fa-google",
+        label: function() {
+            return this.name || "gdrive-export-file"
+        },
+        paletteLabel: "gdrive-export-file",
+        exportable: true,
+        oneditprepare: function() {
+            if (this.payloadTypefileId === null) {
+                if (this.fileId === "") {
+                    this.payloadTypefileId = "date"
+                } else {
+                    this.payloadTypefileId = "str"
+                }
+            } else if (this.payloadTypefileId === 'string' || this.payloadTypefileId === 'none') {
+                this.payloadTypefileId = "str"
+            }
+
+            $("#node-input-payloadTypefileId").val(this.payloadTypefileId)
+            $("#node-input-fileId").typedInput({
+                default: "str",
+                typeField: $("#node-input-payloadTypefileId"),
+                types: ["str", "msg", "flow", "global"]
+            })
+            $("#node-input-fileId").typedInput("type", this.payloadTypefileId)
+
+            const sheetTypeselectFieldValues = ["xlsx", "odf", "pdf", "csv"]
+            sheetTypeselectFieldValues.forEach((val) => {
+                $("#node-input-sheetType").append($("<option></option>").attr("value", val).text(val))
+            })
+            $("#node-input-sheetType").val(this.sheetType)
+
+            const docTypeselectFieldValues = ["docx", "odt", "pdf", "txt"]
+            docTypeselectFieldValues.forEach((val) => {
+                $("#node-input-docType").append($("<option></option>").attr("value", val).text(val))
+            })
+            $("#node-input-docType").val(this.docType)
+
+            const slideTypeselectFieldValues = ["pptx", "odp", "pdf", "txt"]
+            slideTypeselectFieldValues.forEach((val) => {
+                $("#node-input-slideType").append($("<option></option>").attr("value", val).text(val))
+            })
+            $("#node-input-slideType").val(this.slideType)
+
+
+            const documentTypeFieldSetNames = ["sheet", "doc", "slide"]
+            documentTypeFieldSetNames.forEach((fieldSetName) => {
+                $("#node-input-documentType").append($("<option></option>").attr("value", fieldSetName).text(fieldSetName))
+            })
+
+            $("#node-input-documentType").val(this.documentType)
+            $("#node-input-documentType").on("change", (e) => {
+                const newFieldSet = e.target.value
+                documentTypeFieldSetNames.forEach((fieldSetName) => {
+                    if (fieldSetName !== newFieldSet) {
+                        document.querySelector("div#fieldset-" + fieldSetName).style.display = 'none'
+                    }
+                })
+                document.querySelector("div#fieldset-" + newFieldSet).style.display = ''
+                $("#node-input-documentType").val(e.target.value)
+            })
+
+        },
+        oneditsave: function() {},
+        oneditcancel: function() {},
+        oneditdelete: function() {},
+        oneditresize: function() {},
+        onpaletteadd: function() {},
+        onpaletteremove: function() {}
+    });
+</script>
+
+<script type="text/html" data-template-name="Export File">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" style="width:70%;" placeholder="Name" />
+    </div>
+    <div class="form-row">
+        <label for="node-input-session">session</label>
+        <input type="text" id="node-input-session"></input>
+    </div>
+    <div class="form-row">
+        <label for="node-input-fileId">File Id</label>
+        <input type="text" id="node-input-fileId"></input>
+        <input type="hidden" id="node-input-payloadTypefileId">
+    </div>
+    <div class="form-row">
+        <label for="node-input-documentType">documentType</label>
+        <select type="text" id="node-input-documentType">
+        </select>
+    </div>
+    <div id="fieldset-sheet" style="padding-left: 10px;">
+        <div class="form-row">
+            <label for="node-input-sheetType">Export Type</label>
+            <select type="text" id="node-input-sheetType">
+            </select>
+        </div>
+    </div>
+
+    <div id="fieldset-doc" style="padding-left: 10px;">
+        <div class="form-row">
+            <label for="node-input-docType">Export Type</label>
+            <select type="text" id="node-input-docType">
+            </select>
+        </div>
+    </div>
+
+    <div id="fieldset-slide" style="padding-left: 10px;">
+        <div class="form-row">
+            <label for="node-input-slideType">Export Type</label>
+            <select type="text" id="node-input-slideType">
+            </select>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" data-help-name="Export File">
+    <h2>Description</h2>
+    <p>Query opens tabs based on criteria like URL, muted status</p>
+
+    <h2>Config</h2>
+    <dl class="message-properties">
+
+        <dt>payload<span class="property-type">various</span></dt>
+        <dd>The configured payload of the message.</dd>
+
+        <dt class="optional">topic <span class="property-type">string</span></dt>
+        <dd>An optional property</dd>
+
+    </dl>
+
+
+    <h2>Outputs</h2>
+    <dl class="message-properties">
+
+        <dt>payload<span class="property-type">various</span></dt>
+        <dd>The configured payload of the message.</dd>
+
+        <dt class="optional">topic <span class="property-type">string</span></dt>
+        <dd>An optional property</dd>
+
+    </dl>
+</script>

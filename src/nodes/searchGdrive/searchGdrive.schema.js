@@ -10,6 +10,7 @@ class SearchGdrive extends Node {
         name: 'search-gdrive',
         label: 'search-gdrive',
         category: 'Maya Red Gdrive',
+        color: '#FDF0C2',
         isConfig: false,
         fields: {
             session: new fields.ConfigNode({type: GdriveAuth}),

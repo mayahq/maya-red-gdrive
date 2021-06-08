@@ -14,6 +14,7 @@ class GsheetAppend extends Node {
         name: 'gsheet-append',
         label: 'gsheet-append',
         category: 'Maya Red Gdrive',
+        color: '#FDF0C2',
         isConfig: false,
         fields: {
             session: new fields.ConfigNode({type: GdriveAuth}),    
