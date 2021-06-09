@@ -64,7 +64,6 @@ class GdriveExportFile extends Node {
 	async onMessage(msg, vals) {
 		// Handle the message. The returned value will
 		// be sent as the message to any further nodes.
-		console.log(vals)
 		let urlLength, fileId, mimeType, ext;
 		switch (vals.documentType.selected) {
 			case "sheet": {
@@ -96,9 +95,8 @@ class GdriveExportFile extends Node {
 						ext = "xlsx";
 					}
 				}
-				documentType = "sheet";
 				urlLength = "https://docs.google.com/spreadsheets/d/".length;
-				fileId = vals.docUrl.substring(urlLength, vals.url.indexOf('/',len));
+				fileId = vals.docUrl.substring(urlLength, vals.docUrl.indexOf('/',urlLength));
 				break;
 			}
 			case "doc": {
@@ -130,9 +128,8 @@ class GdriveExportFile extends Node {
 						ext = "docx";
 					}
 				}
-				documentType = "doc";
 				urlLength = "https://docs.google.com/document/d/".length;
-				fileId = vals.docUrl.substring(urlLength, vals.url.indexOf('/',len));
+				fileId = vals.docUrl.substring(urlLength, vals.docUrl.indexOf('/',urlLength));
 				break;
 			}
 			case "slide": {
@@ -164,9 +161,8 @@ class GdriveExportFile extends Node {
 						ext = "pptx";
 					}
 				}
-				documentType = "slide";
 				urlLength = "https://docs.google.com/presentation/d/".length;
-				fileId = vals.docUrl.substring(urlLength, vals.url.indexOf('/',len));
+				fileId = vals.docUrl.substring(urlLength, vals.docUrl.indexOf('/',urlLength));
 				break;
 			}
 		}
