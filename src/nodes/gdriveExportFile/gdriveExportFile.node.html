@@ -13,10 +13,10 @@
                 value: "",
                 type: "gdrive-auth"
             },
-            fileId: {
+            docUrl: {
                 value: ""
             },
-            payloadTypefileId: {
+            payloadTypedocUrl: {
                 value: "str"
             },
             sheetType: {
@@ -53,23 +53,23 @@
         paletteLabel: "gdrive-export-file",
         exportable: true,
         oneditprepare: function() {
-            if (this.payloadTypefileId === null) {
-                if (this.fileId === "") {
-                    this.payloadTypefileId = "date"
+            if (this.payloadTypedocUrl === null) {
+                if (this.docUrl === "") {
+                    this.payloadTypedocUrl = "date"
                 } else {
-                    this.payloadTypefileId = "str"
+                    this.payloadTypedocUrl = "str"
                 }
-            } else if (this.payloadTypefileId === 'string' || this.payloadTypefileId === 'none') {
-                this.payloadTypefileId = "str"
+            } else if (this.payloadTypedocUrl === 'string' || this.payloadTypedocUrl === 'none') {
+                this.payloadTypedocUrl = "str"
             }
 
-            $("#node-input-payloadTypefileId").val(this.payloadTypefileId)
-            $("#node-input-fileId").typedInput({
+            $("#node-input-payloadTypedocUrl").val(this.payloadTypedocUrl)
+            $("#node-input-docUrl").typedInput({
                 default: "str",
-                typeField: $("#node-input-payloadTypefileId"),
+                typeField: $("#node-input-payloadTypedocUrl"),
                 types: ["str", "msg", "flow", "global"]
             })
-            $("#node-input-fileId").typedInput("type", this.payloadTypefileId)
+            $("#node-input-docUrl").typedInput("type", this.payloadTypedocUrl)
 
             const sheetTypeselectFieldValues = ["xlsx", "ods", "pdf", "csv"]
             sheetTypeselectFieldValues.forEach((val) => {
@@ -163,9 +163,9 @@
         <input type="text" id="node-input-session"></input>
     </div>
     <div class="form-row">
-        <label for="node-input-fileId">File Id</label>
-        <input type="text" id="node-input-fileId"></input>
-        <input type="hidden" id="node-input-payloadTypefileId">
+        <label for="node-input-docUrl">File URL</label>
+        <input type="text" id="node-input-docUrl"></input>
+        <input type="hidden" id="node-input-payloadTypedocUrl">
     </div>
     <div class="form-row">
         <label for="node-input-documentType">File Type</label>
@@ -214,8 +214,8 @@
     <h2>Config</h2>
     <dl class="message-properties">
 
-        <dt>File Id<span class="property-type">string</span></dt>
-        <dd>Id of the file on Google Drive to which authenticated user has access to</dd>
+        <dt>Document Url<span class="property-type">string</span></dt>
+        <dd>URL of the Google drive document to be downloaded</dd>
 
         <dt>File Type <span class="property-type">string</span></dt>
         <dd>Select the type of file to be downloaded from the available options: Google Doc (doc), Google Sheet (sheet) or Google Slide (slide)</dd>

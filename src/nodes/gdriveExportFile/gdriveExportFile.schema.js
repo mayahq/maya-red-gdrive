@@ -21,10 +21,10 @@ class GdriveExportFile extends Node {
 		fields: {
 			// Whatever custom fields the node needs.
 			session: new fields.ConfigNode({ type: GdriveAuth }),
-			fileId: new fields.Typed({
+			docUrl: new fields.Typed({
 				type: "str",
 				allowedTypes: ["str", "msg", "flow", "global"],
-				displayName: "File Id",
+				displayName: "File URL",
 			}),
 			documentType: new fields.SelectFieldSet({
 				fieldSets: {
@@ -65,7 +65,7 @@ class GdriveExportFile extends Node {
 		// Handle the message. The returned value will
 		// be sent as the message to any further nodes.
 		console.log(vals)
-		let documentType, mimeType, ext;
+		let urlLength, fileId, mimeType, ext;
 		switch (vals.documentType.selected) {
 			case "sheet": {
 				switch (vals.documentType.childValues.sheetType) {
@@ -97,6 +97,8 @@ class GdriveExportFile extends Node {
 					}
 				}
 				documentType = "sheet";
+				urlLength = "https://docs.google.com/spreadsheets/d/".length;
+				fileId = vals.docUrl.substring(urlLength, vals.url.indexOf('/',len));
 				break;
 			}
 			case "doc": {
@@ -129,6 +131,8 @@ class GdriveExportFile extends Node {
 					}
 				}
 				documentType = "doc";
+				urlLength = "https://docs.google.com/document/d/".length;
+				fileId = vals.docUrl.substring(urlLength, vals.url.indexOf('/',len));
 				break;
 			}
 			case "slide": {
@@ -161,10 +165,12 @@ class GdriveExportFile extends Node {
 					}
 				}
 				documentType = "slide";
+				urlLength = "https://docs.google.com/presentation/d/".length;
+				fileId = vals.docUrl.substring(urlLength, vals.url.indexOf('/',len));
 				break;
 			}
 		}
-		let apiRequestUrl = `https://www.googleapis.com/drive/v3/files/${vals.fileId}/export?mimeType=${mimeType}&prettyPrint=true`;
+		let apiRequestUrl = `https://www.googleapis.com/drive/v3/files/${fileId}/export?mimeType=${mimeType}&prettyPrint=true`;
 		try {
 			const downloadFile = async (apiRequestUrl, savePath, options) => {
 				const streamPipeline = promisify(pipeline);
