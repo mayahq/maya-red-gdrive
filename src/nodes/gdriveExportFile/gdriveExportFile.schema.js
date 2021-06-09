@@ -179,10 +179,10 @@ class GdriveExportFile extends Node {
 					return response;
 				}
 			};
-
+			let filePathToSave = vals.saveTo ? path.join(vals.saveTo, vals.fileName || "maya-autodownload")+"."+ext: path.join(homedir(), vals.fileName || "maya-autodownload") + "."+ ext;
 			let res = await downloadFile(
 				apiRequestUrl,
-				vals.saveTo || path.join(homedir(), vals.fileName || "maya-autodownload" + "."+ ext),
+				filePathToSave,
 				{
 					method: "GET",
 					headers: {
@@ -193,7 +193,7 @@ class GdriveExportFile extends Node {
 			);
 
 			if (res.status === 200) {
-				msg.payload = vals.saveTo || path.join(homedir(), vals.fileName || "maya-autodownload" + "."+ ext);
+				msg.payload = filePathToSave;
 				this.setStatus("SUCCESS", "file downloaded");
 				return msg;
 			} else {
