@@ -1,14 +1,23 @@
 <h2>Description</h2>
-<p>Query opens tabs based on criteria like URL, muted status</p>
+<p>Google Drive Export node is to download files from Google Drive in various available format</p>
 
 <h2>Config</h2>
 <dl class="message-properties">
 
-    <dt>payload<span class="property-type">various</span></dt>
-    <dd>The configured payload of the message.</dd>
+    <dt>File Id<span class="property-type">string</span></dt>
+    <dd>Id of the file on Google Drive to which authenticated user has access to</dd>
 
-    <dt class="optional">topic <span class="property-type">string</span></dt>
-    <dd>An optional property</dd>
+    <dt>File Type <span class="property-type">string</span></dt>
+    <dd>Select the type of file to be downloaded from the available options: Google Doc (doc), Google Sheet (sheet) or Google Slide (slide)</dd>
+
+    <dt>Export Type <span class="property-type">string</span></dt>
+    <dd>Choose the format of file to be downloaded as.</dd>
+
+    <dt>Save to <span class="property-type">string|path</span></dt>
+    <dd>Save the exported file to a location on disk. Leaving this blank will save the file in <code>$HOME</code> directory of device</dd>
+
+    <dt>Filename<span class="property-type">string</span></dt>
+    <dd>Save the file as this name on the filesystem. Do not put the file extension here</dd>
 
 </dl>
 
@@ -16,10 +25,7 @@
 <h2>Outputs</h2>
 <dl class="message-properties">
 
-    <dt>payload<span class="property-type">various</span></dt>
-    <dd>The configured payload of the message.</dd>
-
-    <dt class="optional">topic <span class="property-type">string</span></dt>
-    <dd>An optional property</dd>
+    <dt>payload<span class="property-type">file</span></dt>
+    <dd>The downloaded file is available as payload of the node</dd>
     
 </dl>

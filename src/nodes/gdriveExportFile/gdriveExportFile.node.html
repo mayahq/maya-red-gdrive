@@ -31,6 +31,18 @@
             documentType: {
                 value: "sheet"
             },
+            saveTo: {
+                value: ""
+            },
+            payloadTypesaveTo: {
+                value: "str"
+            },
+            fileName: {
+                value: ""
+            },
+            payloadTypefileName: {
+                value: "str"
+            },
         },
         inputs: 1,
         outputs: 1,
@@ -59,7 +71,7 @@
             })
             $("#node-input-fileId").typedInput("type", this.payloadTypefileId)
 
-            const sheetTypeselectFieldValues = ["xlsx", "odf", "pdf", "csv"]
+            const sheetTypeselectFieldValues = ["xlsx", "ods", "pdf", "csv"]
             sheetTypeselectFieldValues.forEach((val) => {
                 $("#node-input-sheetType").append($("<option></option>").attr("value", val).text(val))
             })
@@ -95,6 +107,42 @@
                 $("#node-input-documentType").val(e.target.value)
             })
 
+            if (this.payloadTypesaveTo === null) {
+                if (this.saveTo === "") {
+                    this.payloadTypesaveTo = "date"
+                } else {
+                    this.payloadTypesaveTo = "str"
+                }
+            } else if (this.payloadTypesaveTo === 'string' || this.payloadTypesaveTo === 'none') {
+                this.payloadTypesaveTo = "str"
+            }
+
+            $("#node-input-payloadTypesaveTo").val(this.payloadTypesaveTo)
+            $("#node-input-saveTo").typedInput({
+                default: "str",
+                typeField: $("#node-input-payloadTypesaveTo"),
+                types: ["str", "msg", "flow", "global"]
+            })
+            $("#node-input-saveTo").typedInput("type", this.payloadTypesaveTo)
+
+            if (this.payloadTypefileName === null) {
+                if (this.fileName === "") {
+                    this.payloadTypefileName = "date"
+                } else {
+                    this.payloadTypefileName = "str"
+                }
+            } else if (this.payloadTypefileName === 'string' || this.payloadTypefileName === 'none') {
+                this.payloadTypefileName = "str"
+            }
+
+            $("#node-input-payloadTypefileName").val(this.payloadTypefileName)
+            $("#node-input-fileName").typedInput({
+                default: "str",
+                typeField: $("#node-input-payloadTypefileName"),
+                types: ["str", "msg", "flow", "global"]
+            })
+            $("#node-input-fileName").typedInput("type", this.payloadTypefileName)
+
         },
         oneditsave: function() {},
         oneditcancel: function() {},
@@ -120,7 +168,7 @@
         <input type="hidden" id="node-input-payloadTypefileId">
     </div>
     <div class="form-row">
-        <label for="node-input-documentType">documentType</label>
+        <label for="node-input-documentType">File Type</label>
         <select type="text" id="node-input-documentType">
         </select>
     </div>
@@ -147,20 +195,39 @@
             </select>
         </div>
     </div>
+    <div class="form-row">
+        <label for="node-input-saveTo">Save To</label>
+        <input type="text" id="node-input-saveTo"></input>
+        <input type="hidden" id="node-input-payloadTypesaveTo">
+    </div>
+    <div class="form-row">
+        <label for="node-input-fileName">Filename</label>
+        <input type="text" id="node-input-fileName"></input>
+        <input type="hidden" id="node-input-payloadTypefileName">
+    </div>
 </script>
 
 <script type="text/html" data-help-name="Export File">
     <h2>Description</h2>
-    <p>Query opens tabs based on criteria like URL, muted status</p>
+    <p>Google Drive Export node is to download files from Google Drive in various available format</p>
 
     <h2>Config</h2>
     <dl class="message-properties">
 
-        <dt>payload<span class="property-type">various</span></dt>
-        <dd>The configured payload of the message.</dd>
+        <dt>File Id<span class="property-type">string</span></dt>
+        <dd>Id of the file on Google Drive to which authenticated user has access to</dd>
 
-        <dt class="optional">topic <span class="property-type">string</span></dt>
-        <dd>An optional property</dd>
+        <dt>File Type <span class="property-type">string</span></dt>
+        <dd>Select the type of file to be downloaded from the available options: Google Doc (doc), Google Sheet (sheet) or Google Slide (slide)</dd>
+
+        <dt>Export Type <span class="property-type">string</span></dt>
+        <dd>Choose the format of file to be downloaded as.</dd>
+
+        <dt>Save to <span class="property-type">string|path</span></dt>
+        <dd>Save the exported file to a location on disk. Leaving this blank will save the file in <code>$HOME</code> directory of device</dd>
+
+        <dt>Filename<span class="property-type">string</span></dt>
+        <dd>Save the file as this name on the filesystem. Do not put the file extension here</dd>
 
     </dl>
 
@@ -168,11 +235,8 @@
     <h2>Outputs</h2>
     <dl class="message-properties">
 
-        <dt>payload<span class="property-type">various</span></dt>
-        <dd>The configured payload of the message.</dd>
-
-        <dt class="optional">topic <span class="property-type">string</span></dt>
-        <dd>An optional property</dd>
+        <dt>payload<span class="property-type">file</span></dt>
+        <dd>The downloaded file is available as payload of the node</dd>
 
     </dl>
 </script>
