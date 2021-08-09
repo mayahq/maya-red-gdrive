@@ -1,9 +1,10 @@
 const {
     Node,
     Schema,
-    fields
-} = require('@mayahq/module-sdk')
-const GdriveAuth = require("../gdriveAuth/gdriveAuth.schema");
+    fields,
+} = require('@mayahq/module-sdk');
+const refresh = require('../../util/refresh')
+// const GdriveAuth = require("../gdriveAuth/gdriveAuth.schema");
 
 class SearchGdrive extends Node {
     static schema = new Schema({
@@ -13,7 +14,6 @@ class SearchGdrive extends Node {
         color: '#FDF0C2',
         isConfig: false,
         fields: {
-            session: new fields.ConfigNode({type: GdriveAuth}),
             query: new fields.Typed({type: 'str', defaultVal: '', allowedTypes: ['msg', 'flow', 'global']}),
             includeItemsFromAllDrives: new fields.Typed({type: 'bool', defaultVal: true, allowedTypes: ['msg', 'flow', 'global']}),
             pageSize: new fields.Typed({type: 'num', defaultVal: 10, allowedTypes: ['msg', 'flow', 'global']}),
@@ -26,6 +26,12 @@ class SearchGdrive extends Node {
         super(node, RED)
     }
 
+    async refreshTokens() {
+        const newTokens = await refresh(this)
+        await this.tokens.set(newTokens)
+        return newTokens
+    }
+
     onInit() {
         // Do something on initialization of node
     }
@@ -35,20 +41,50 @@ class SearchGdrive extends Node {
         // be sent as the message to any further nodes.
         this.setStatus("PROGRESS", "fetching drive files...");
         var fetch = require("node-fetch"); // or fetch() is native in browsers
+        let fetchConfig = {
+            url: `https://www.googleapis.com/drive/v3/files?q=${encodeURI(vals.query)}&includeItemsFromAllDrives=${vals.includeItemsFromAllDrives}&supportsTeamDrives=${vals.includeItemsFromAllDrives}&pageSize=${vals.pageSize}${vals.pageToken && vals.pageToken!== '' ? `&pageToken=${vals.pageToken}` : ''}`,
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${this.tokens.vals.access_token}`,
+                "Content-Type": "application/json"
+            }
+        }
         try{
-            let res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${encodeURI(vals.query)}&includeItemsFromAllDrives=${vals.includeItemsFromAllDrives}&supportsTeamDrives=${vals.includeItemsFromAllDrives}&pageSize=${vals.pageSize}${vals.pageToken && vals.pageToken!== '' ? `&pageToken=${vals.pageToken}` : ''}`, 
+            let res = await fetch(fetchConfig.url, 
             {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${this.credentials.session.access_token}`,
-                    "Content-Type":"application/json"
-                }
+                method: fetchConfig.method,
+                headers: fetchConfig.headers
             });
             let json = await res.json();
             if(json.error){
-                msg.error = json.error;
-                this.setStatus("ERROR", json.error.message);
-                return msg;
+                if(json.status === 401){
+                    const { access_token } = await this.refreshTokens()
+                    if (!access_token) {
+                        this.setStatus('ERROR', 'Failed to refresh access token')
+                        msg.isError = true
+                        msg.error = {
+                            reason: 'TOKEN_REFRESH_FAILED',
+                        }
+                        return msg
+                    }
+                    fetchConfig.headers.Authorization = `Bearer ${access_token}`;
+                    res = await fetch(fetchConfig.url, 
+                            {
+                                method: fetchConfig.method,
+                                headers: fetchConfig.headers
+                            });
+                    json = await res.json();
+                    if(json.error){
+                        msg.error = json.error;
+                        this.setStatus("ERROR", json.error.message);
+                        return msg;
+                    }
+                } else {
+                    msg.error = json.error;
+                    this.setStatus("ERROR", json.error.message);
+                    return msg;
+                }
+                
             }
             msg.payload = json;
             this.setStatus("SUCCESS", "fetched");

@@ -1,11 +1,11 @@
 const { Node, Schema, fields } = require("@mayahq/module-sdk");
-const GdriveAuth = require("../gdriveAuth/gdriveAuth.schema");
 const fetch = require("node-fetch");
 const { createWriteStream } = require("fs");
 const { promisify } = require("util");
 const { homedir } = require("os");
 const { pipeline } = require("stream")
 const path = require("path");
+const refresh = require('../../util/refresh')
 class GdriveExportFile extends Node {
 	constructor(node, RED) {
 		super(node, RED);
@@ -56,7 +56,11 @@ class GdriveExportFile extends Node {
 			fileName: new fields.Typed({type: 'str', allowedTypes: ["str", "msg", "flow", "global"], defaultVal: "", displayName: "Filename"})
 		},
 	});
-
+	async refreshTokens() {
+        const newTokens = await refresh(this)
+        await this.tokens.set(newTokens)
+        return newTokens
+    }
 	onInit() {
 		// Do something on initialization of node
 	}
@@ -197,9 +201,41 @@ class GdriveExportFile extends Node {
 				this.setStatus("SUCCESS", "file downloaded");
 				return msg;
 			} else {
-				msg.error = "Error downloading file";
-				this.setStatus("ERROR", "error occurred");
-				return msg;
+				if(res.status === 401) {
+					const { access_token } = await this.refreshTokens();
+					if (!access_token) {
+                        this.setStatus('ERROR', 'Failed to refresh access token')
+                        msg.isError = true
+                        msg.error = {
+                            reason: 'TOKEN_REFRESH_FAILED',
+                        }
+                        return msg
+                    }
+					res = await downloadFile(
+						apiRequestUrl,
+						filePathToSave,
+						{
+							method: "GET",
+							headers: {
+								Authorization: `Bearer ${access_token}`,
+								"Content-Type": "application/json",
+							},
+						}
+					);
+					if (res.status === 200) {
+						msg.payload = filePathToSave;
+						this.setStatus("SUCCESS", "file downloaded");
+						return msg;
+					} else {
+						msg.error = "Error downloading file";
+						this.setStatus("ERROR", "error occurred");
+						return msg;
+					}
+				} else {
+					msg.error = "Error downloading file";
+					this.setStatus("ERROR", "error occurred");
+					return msg;
+				}
 			}
 		} catch (err) {
 			msg.error = err;

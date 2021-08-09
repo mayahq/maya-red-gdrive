@@ -15,7 +15,7 @@
   },
   "homepage": "#readme",
   "dependencies": {
-    "@mayahq/module-sdk": "^0.2.5",
+    "@mayahq/module-sdk": "^0.4.5",
     "crypto": "^1.0.1",
     "fastmq": "^1.3.8",
     "node-fetch": "^2.6.1",
@@ -25,7 +25,6 @@
   "nodeRedModuleName": "maya-red-gdrive",
   "node-red": {
     "nodes": {
-      "gdrive-auth": "src/nodes/gdriveAuth/gdriveAuth.node.js",
       "search-gdrive": "src/nodes/searchGdrive/searchGdrive.node.js",
       "gsheet-append": "src/nodes/gsheetAppend/gsheetAppend.node.js",
       "gdrive-export-file": "src/nodes/gdriveExportFile/gdriveExportFile.node.js"
