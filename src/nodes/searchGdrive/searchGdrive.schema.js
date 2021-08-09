@@ -22,8 +22,10 @@ class SearchGdrive extends Node {
 
     })
 
-    constructor(node, RED) {
-        super(node, RED)
+    constructor(node, RED, opts) {
+        super(node, RED, {
+            ...opts
+        })
     }
 
     async refreshTokens() {
@@ -39,6 +41,7 @@ class SearchGdrive extends Node {
     async onMessage(msg, vals) {
         // Handle the message. The returned value will
         // be sent as the message to any further nodes.
+        console.log(this);
         this.setStatus("PROGRESS", "fetching drive files...");
         var fetch = require("node-fetch"); // or fetch() is native in browsers
         let fetchConfig = {

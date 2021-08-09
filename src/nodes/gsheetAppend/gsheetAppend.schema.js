@@ -7,8 +7,10 @@ const {
 const refresh = require('../../util/refresh');
 
 class GsheetAppend extends Node {
-    constructor(node, RED) {
-        super(node, RED)
+    constructor(node, RED, opts) {
+        super(node, RED, {
+            ...opts
+        })
     }
 
     static schema = new Schema({

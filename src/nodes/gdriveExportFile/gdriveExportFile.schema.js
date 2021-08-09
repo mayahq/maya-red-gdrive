@@ -7,9 +7,11 @@ const { pipeline } = require("stream")
 const path = require("path");
 const refresh = require('../../util/refresh')
 class GdriveExportFile extends Node {
-	constructor(node, RED) {
-		super(node, RED);
-	}
+	constructor(node, RED, opts) {
+        super(node, RED, {
+            ...opts
+        })
+    }
 
 	static schema = new Schema({
 		name: "Export File",
@@ -20,7 +22,6 @@ class GdriveExportFile extends Node {
 		icon: "fa-google",
 		fields: {
 			// Whatever custom fields the node needs.
-			session: new fields.ConfigNode({ type: GdriveAuth }),
 			docUrl: new fields.Typed({
 				type: "str",
 				allowedTypes: ["str", "msg", "flow", "global"],
