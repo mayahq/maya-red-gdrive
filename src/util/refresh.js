@@ -9,7 +9,6 @@ async function refresh(node) {
         const { access_token, refresh_token, lastUpdated } = tokens
         if (Date.now() - lastUpdated < 1*HOUR - 2*MINUTE) {
             console.log('Tokens were already updated, no need to refresh')
-            console.log('New tokens:', tokens)
             return tokens
         }
 
@@ -17,7 +16,6 @@ async function refresh(node) {
         try {
             // const newTokens = await refreshTokens({ access_token, refresh_token })
             const newTokens = await node.tokens.refresh({ access_token, refresh_token })
-            console.log('Tokens refreshed via API. New tokens:', newTokens)
             return {
                 ...newTokens,
                 lastUpdated: Date.now()

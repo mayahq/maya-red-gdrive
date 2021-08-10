@@ -41,7 +41,6 @@ class SearchGdrive extends Node {
     async onMessage(msg, vals) {
         // Handle the message. The returned value will
         // be sent as the message to any further nodes.
-        console.log(this);
         this.setStatus("PROGRESS", "fetching drive files...");
         var fetch = require("node-fetch"); // or fetch() is native in browsers
         let fetchConfig = {
@@ -59,8 +58,9 @@ class SearchGdrive extends Node {
                 headers: fetchConfig.headers
             });
             let json = await res.json();
+            console.log(json);
             if(json.error){
-                if(json.status === 401){
+                if(json.error.code === 401){
                     const { access_token } = await this.refreshTokens()
                     if (!access_token) {
                         this.setStatus('ERROR', 'Failed to refresh access token')
