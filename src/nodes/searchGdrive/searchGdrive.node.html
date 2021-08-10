@@ -9,10 +9,6 @@
             isProfileConfigNode: {
                 value: false
             },
-            session: {
-                value: "",
-                type: "gdrive-auth"
-            },
             query: {
                 value: ""
             },
@@ -40,7 +36,7 @@
         },
         inputs: 1,
         outputs: 1,
-        icon: "fa-file-code-o.png",
+        icon: "drive.png",
         label: function() {
             return this.name || "search-gdrive"
         },
@@ -135,10 +131,6 @@
         <input type="text" id="node-input-name" style="width:70%;" placeholder="Name" />
     </div>
     <div class="form-row">
-        <label for="node-input-session">session</label>
-        <input type="text" id="node-input-session"></input>
-    </div>
-    <div class="form-row">
         <label for="node-input-query">query</label>
         <input type="text" id="node-input-query"></input>
         <input type="hidden" id="node-input-payloadTypequery">
@@ -165,9 +157,9 @@
     <p>This node searches for files and folders in your google drive based on an input query</p>
 
     <h2>Session</h2>
-    <dl class="message-properties">
+    <p>
         Select or Create a gdrive-auth config node
-    </dl>
+    <p>
     <h2>Inputs</h2>
     <dl class="message-properties">
 

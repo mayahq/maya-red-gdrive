@@ -13,6 +13,7 @@ class SearchGdrive extends Node {
         category: 'Maya Red Gdrive',
         color: '#FDF0C2',
         isConfig: false,
+        icon: "drive.png",
         fields: {
             query: new fields.Typed({type: 'str', defaultVal: '', allowedTypes: ['msg', 'flow', 'global']}),
             includeItemsFromAllDrives: new fields.Typed({type: 'bool', defaultVal: true, allowedTypes: ['msg', 'flow', 'global']}),

@@ -19,7 +19,7 @@ class GdriveExportFile extends Node {
 		category: "Maya Red Gdrive",
 		isConfig: false,
 		color: "#FDF0C2",
-		icon: "fa-google",
+		icon: "drive.png",
 		fields: {
 			// Whatever custom fields the node needs.
 			docUrl: new fields.Typed({

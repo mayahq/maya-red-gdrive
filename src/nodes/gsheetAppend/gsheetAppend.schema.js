@@ -19,6 +19,7 @@ class GsheetAppend extends Node {
         category: 'Maya Red Gdrive',
         color: '#FDF0C2',
         isConfig: false,
+        icon: "drive.png",
         fields: {  
             url: new fields.Typed({type: 'str', defaultVal: '', allowedTypes: ['msg', 'flow', 'global']}),
             range: new fields.Typed({type: 'str', defaultVal: '', allowedTypes: ['msg', 'flow', 'global']}),
