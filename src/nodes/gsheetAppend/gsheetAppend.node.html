@@ -9,10 +9,6 @@
             isProfileConfigNode: {
                 value: false
             },
-            session: {
-                value: "",
-                type: "gdrive-auth"
-            },
             url: {
                 value: ""
             },
@@ -49,7 +45,7 @@
         },
         inputs: 1,
         outputs: 1,
-        icon: "fa-file-code-o.png",
+        icon: "drive.png",
         label: function() {
             return this.name || "gsheet-append"
         },
@@ -156,10 +152,6 @@
         <input type="text" id="node-input-name" style="width:70%;" placeholder="Name" />
     </div>
     <div class="form-row">
-        <label for="node-input-session">session</label>
-        <input type="text" id="node-input-session"></input>
-    </div>
-    <div class="form-row">
         <label for="node-input-url">url</label>
         <input type="text" id="node-input-url"></input>
         <input type="hidden" id="node-input-payloadTypeurl">
@@ -206,9 +198,9 @@
     <p>Google Sheet Append node is used to append data to an existing table in a google sheet document</p>
 
     <h2>Session</h2>
-    <dl class="message-properties">
+    <p>
         Select or Create a gdrive-auth config node
-    </dl>
+    </p>
     <h2>Inputs</h2>
     <dl class="message-properties">
 

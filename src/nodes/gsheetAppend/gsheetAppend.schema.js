@@ -3,11 +3,14 @@ const {
     Schema,
     fields
 } = require('@mayahq/module-sdk')
-const GdriveAuth = require("../gdriveAuth/gdriveAuth.schema");
+// const GdriveAuth = require("../gdriveAuth/gdriveAuth.schema");
+const refresh = require('../../util/refresh');
 
 class GsheetAppend extends Node {
-    constructor(node, RED) {
-        super(node, RED)
+    constructor(node, RED, opts) {
+        super(node, RED, {
+            ...opts
+        })
     }
 
     static schema = new Schema({
@@ -16,8 +19,8 @@ class GsheetAppend extends Node {
         category: 'Maya Red Gdrive',
         color: '#FDF0C2',
         isConfig: false,
-        fields: {
-            session: new fields.ConfigNode({type: GdriveAuth}),    
+        icon: "drive.png",
+        fields: {  
             url: new fields.Typed({type: 'str', defaultVal: '', allowedTypes: ['msg', 'flow', 'global']}),
             range: new fields.Typed({type: 'str', defaultVal: '', allowedTypes: ['msg', 'flow', 'global']}),
             values: new fields.Typed({type: 'str', allowedTypes: ['msg', 'flow', 'global']}),
@@ -29,6 +32,12 @@ class GsheetAppend extends Node {
         },
     })
 
+    async refreshTokens() {
+        const newTokens = await refresh(this)
+        await this.tokens.set(newTokens)
+        return newTokens
+    }
+
     onInit() {
         // Do something on initialization of node
     }
@@ -38,25 +47,57 @@ class GsheetAppend extends Node {
         var fetch = require("node-fetch"); // or fetch() is native in browsers
         let len = "https://docs.google.com/spreadsheets/d/".length;
         let spreadsheetId = vals.url.substring(len,vals.url.indexOf('/',len));
-        try{
-            let res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURI(vals.range)}:append?insertDataOption=${vals.insertDataOption}&responseDateTimeRenderOption=${vals.responseDateTimeRenderOption}&responseValueRenderOption=${vals.responseValueRenderOption}&valueInputOption=${vals.valueInputOption}`, 
-            {
-                method: "POST",
-                body:JSON.stringify({
+        let fetchConfig = {
+            url: `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURI(vals.range)}:append?insertDataOption=${vals.insertDataOption}&responseDateTimeRenderOption=${vals.responseDateTimeRenderOption}&responseValueRenderOption=${vals.responseValueRenderOption}&valueInputOption=${vals.valueInputOption}`,
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${this.credentials.session.access_token}`,
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify({
                     range: vals.range,
                     majorDimension: vals.majorDimension,
                     values: vals.values
-                }),
-                headers: {
-                    "Authorization": `Bearer ${this.credentials.session.access_token}`,
-                    "Content-Type":"application/json"
-                }
+                })
+        }
+        try{
+            let res = await fetch(fetchConfig.url, 
+            {
+                method: fetchConfig.method,
+                headers: fetchConfig.headers,
+                body: fetchConfig.body
             });
             let json = await res.json();
             if(json.error){
-                msg.error = json.error;
-                this.setStatus("ERROR", json.error.message);
-                return msg;
+                if(json.status === 401){
+                    const { access_token } = await this.refreshTokens()
+                    if (!access_token) {
+                        this.setStatus('ERROR', 'Failed to refresh access token')
+                        msg.isError = true
+                        msg.error = {
+                            reason: 'TOKEN_REFRESH_FAILED',
+                        }
+                        return msg
+                    }
+                    fetchConfig.headers.Authorization = `Bearer ${access_token}`;
+                    res = await fetch(fetchConfig.url, 
+                            {
+                                method: fetchConfig.method,
+                                headers: fetchConfig.headers,
+                                body: fetchConfig.body
+                            });
+                    json = await res.json();
+                    if(json.error){
+                        msg.error = json.error;
+                        this.setStatus("ERROR", json.error.message);
+                        return msg;
+                    }
+                } else {
+                    msg.error = json.error;
+                    this.setStatus("ERROR", json.error.message);
+                    return msg;
+                }
+                
             }
             msg.payload = json;
             this.setStatus("SUCCESS", "fetched");

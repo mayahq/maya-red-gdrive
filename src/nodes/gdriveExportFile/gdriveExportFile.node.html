@@ -9,10 +9,6 @@
             isProfileConfigNode: {
                 value: false
             },
-            session: {
-                value: "",
-                type: "gdrive-auth"
-            },
             docUrl: {
                 value: ""
             },
@@ -46,7 +42,7 @@
         },
         inputs: 1,
         outputs: 1,
-        icon: "fa-google",
+        icon: "drive.png",
         label: function() {
             return this.name || "gdrive-export-file"
         },
@@ -159,16 +155,12 @@
         <input type="text" id="node-input-name" style="width:70%;" placeholder="Name" />
     </div>
     <div class="form-row">
-        <label for="node-input-session">session</label>
-        <input type="text" id="node-input-session"></input>
-    </div>
-    <div class="form-row">
         <label for="node-input-docUrl">File URL</label>
         <input type="text" id="node-input-docUrl"></input>
         <input type="hidden" id="node-input-payloadTypedocUrl">
     </div>
     <div class="form-row">
-        <label for="node-input-documentType">File Type</label>
+        <label for="node-input-documentType">documentType</label>
         <select type="text" id="node-input-documentType">
         </select>
     </div>
