@@ -15,7 +15,7 @@
   },
   "homepage": "#readme",
   "dependencies": {
-    "@mayahq/module-sdk": "^0.4.6",
+    "@mayahq/module-sdk": "^0.4.8",
     "crypto": "^1.0.1",
     "node-fetch": "^2.6.1",
     "node-schedule": "^2.0.0"
