@@ -206,7 +206,7 @@ class GdriveExportFile extends Node {
 					const { access_token } = await this.refreshTokens();
 					if (!access_token) {
                         this.setStatus('ERROR', 'Failed to refresh access token')
-                        msg.isError = true
+                        msg["__isError"] = true;
                         msg.error = {
                             reason: 'TOKEN_REFRESH_FAILED',
                         }
@@ -228,6 +228,7 @@ class GdriveExportFile extends Node {
 						this.setStatus("SUCCESS", "file downloaded");
 						return msg;
 					} else {
+						msg["__isError"] = true;
 						msg.error = "Error downloading file";
 						this.setStatus("ERROR", "error occurred");
 						return msg;
@@ -239,6 +240,7 @@ class GdriveExportFile extends Node {
 				}
 			}
 		} catch (err) {
+			msg["__isError"] = true;
 			msg.error = err;
 			console.log(err);
 			this.setStatus("ERROR", "error occurred");
