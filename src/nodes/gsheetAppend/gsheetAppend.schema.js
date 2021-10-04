@@ -51,7 +51,7 @@ class GsheetAppend extends Node {
             url: `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURI(vals.range)}:append?insertDataOption=${vals.insertDataOption}&responseDateTimeRenderOption=${vals.responseDateTimeRenderOption}&responseValueRenderOption=${vals.responseValueRenderOption}&valueInputOption=${vals.valueInputOption}`,
             method: "POST",
             headers: {
-                "Authorization": `Bearer ${this.credentials.session.access_token}`,
+                "Authorization": `Bearer ${this.tokens.vals.access_token}`,
                 "Content-Type":"application/json"
             },
             body: JSON.stringify({
