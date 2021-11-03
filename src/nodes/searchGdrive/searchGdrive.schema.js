@@ -59,7 +59,6 @@ class SearchGdrive extends Node {
                 headers: fetchConfig.headers
             });
             let json = await res.json();
-            console.log(json);
             if(json.error){
                 if(json.error.code === 401){
                     const { access_token } = await this.refreshTokens()
@@ -79,6 +78,7 @@ class SearchGdrive extends Node {
                             });
                     json = await res.json();
                     if(json.error){
+                        msg["__isError"] = true
                         msg.error = json.error;
                         this.setStatus("ERROR", json.error.message);
                         return msg;
