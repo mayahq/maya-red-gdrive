@@ -17,8 +17,7 @@
   "dependencies": {
     "@mayahq/module-sdk": "^0.4.11",
     "crypto": "^1.0.1",
-    "node-fetch": "^2.6.1",
-    "node-schedule": "^2.0.0"
+    "node-fetch": "^2.6.1"
   },
   "nodepath": "src/nodes",
   "nodeRedModuleName": "maya-red-gdrive",
