@@ -22,8 +22,8 @@ class GsheetAppend extends Node {
         icon: "drive.png",
         fields: {  
             url: new fields.Typed({type: 'str', defaultVal: '', allowedTypes: ['msg', 'flow', 'global']}),
-            range: new fields.Typed({type: 'str', defaultVal: '', allowedTypes: ['msg', 'flow', 'global']}),
-            values: new fields.Typed({type: 'str', allowedTypes: ['msg', 'flow', 'global']}),
+            range: new fields.Typed({type: 'str', defaultVal: 'Sheet1', allowedTypes: ['msg', 'flow', 'global']}),
+            values: new fields.Typed({type: 'msg', defaultVal: 'payload', allowedTypes: ['msg', 'flow', 'global']}),
             majorDimension: new fields.Select({ options: ['ROWS', 'COLUMNS'], defaultVal: 'ROWS' }),
             valueInputOption: new fields.Select({ options: ['RAW', 'USER_ENTERED'], defaultVal: 'USER_ENTERED' }),
             insertDataOption: new fields.Select({ options: ['OVERWRITE', 'INSERT_ROWS'], defaultVal: 'INSERT_ROWS' }),

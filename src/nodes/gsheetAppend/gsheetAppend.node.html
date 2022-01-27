@@ -16,16 +16,16 @@
                 value: "str"
             },
             range: {
-                value: ""
+                value: "Sheet1"
             },
             payloadTyperange: {
                 value: "str"
             },
             values: {
-                value: ""
+                value: "payload"
             },
             payloadTypevalues: {
-                value: "str"
+                value: "msg"
             },
             majorDimension: {
                 value: "ROWS"
@@ -92,17 +92,17 @@
                 if (this.values === "") {
                     this.payloadTypevalues = "date"
                 } else {
-                    this.payloadTypevalues = "str"
+                    this.payloadTypevalues = "msg"
                 }
             } else if (this.payloadTypevalues === 'string' || this.payloadTypevalues === 'none') {
-                this.payloadTypevalues = "str"
+                this.payloadTypevalues = "msg"
             }
 
             $("#node-input-payloadTypevalues").val(this.payloadTypevalues)
             $("#node-input-values").typedInput({
-                default: "str",
+                default: "msg",
                 typeField: $("#node-input-payloadTypevalues"),
-                types: ["msg", "flow", "global", "str"]
+                types: ["msg", "flow", "global"]
             })
             $("#node-input-values").typedInput("type", this.payloadTypevalues)
 
