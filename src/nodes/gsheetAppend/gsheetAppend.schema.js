@@ -57,7 +57,7 @@ class GsheetAppend extends Node {
             body: JSON.stringify({
                     range: vals.range,
                     majorDimension: vals.majorDimension,
-                    values: vals.values
+                    values: [vals.values]
                 })
         }
         try{
