@@ -27,5 +27,25 @@
       "gsheet-append": "src/nodes/gsheetAppend/gsheetAppend.node.js",
       "gdrive-export-file": "src/nodes/gdriveExportFile/gdriveExportFile.node.js"
     }
+  },
+  "mayaDetails": {
+    "name": "Google Drive Module",
+    "version": "1.2.2",
+    "description": "Maya module to access all frequently needed functions of Google Drive",
+    "author": "dush-t",
+    "type": "git",
+    "needsUserProfile": true,
+    "configType": {
+      "name": "Google Drive Authentication",
+      "oid": "61973feb53546c43979f67e0"
+    },
+    "thumbnail": "",
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/mayahq/maya-red-gdrive.git"
+    },
+    "origin": {
+      "moduleId": "618e69ee9caba6e380643307"
+    }
   }
 }
