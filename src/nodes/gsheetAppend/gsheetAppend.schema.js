@@ -22,8 +22,8 @@ class GsheetAppend extends Node {
         icon: "drive.png",
         fields: {  
             url: new fields.Typed({type: 'str', defaultVal: '', allowedTypes: ['msg', 'flow', 'global']}),
-            range: new fields.Typed({type: 'str', defaultVal: '', allowedTypes: ['msg', 'flow', 'global']}),
-            values: new fields.Typed({type: 'str', allowedTypes: ['msg', 'flow', 'global']}),
+            range: new fields.Typed({type: 'str', defaultVal: 'Sheet1', allowedTypes: ['msg', 'flow', 'global']}),
+            values: new fields.Typed({type: 'msg', defaultVal: 'payload', allowedTypes: ['msg', 'flow', 'global']}),
             majorDimension: new fields.Select({ options: ['ROWS', 'COLUMNS'], defaultVal: 'ROWS' }),
             valueInputOption: new fields.Select({ options: ['RAW', 'USER_ENTERED'], defaultVal: 'USER_ENTERED' }),
             insertDataOption: new fields.Select({ options: ['OVERWRITE', 'INSERT_ROWS'], defaultVal: 'INSERT_ROWS' }),
@@ -47,6 +47,7 @@ class GsheetAppend extends Node {
         var fetch = require("node-fetch"); // or fetch() is native in browsers
         let len = "https://docs.google.com/spreadsheets/d/".length;
         let spreadsheetId = vals.url.substring(len,vals.url.indexOf('/',len));
+        let  values = [vals.values];
         let fetchConfig = {
             url: `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURI(vals.range)}:append?insertDataOption=${vals.insertDataOption}&responseDateTimeRenderOption=${vals.responseDateTimeRenderOption}&responseValueRenderOption=${vals.responseValueRenderOption}&valueInputOption=${vals.valueInputOption}`,
             method: "POST",
@@ -57,7 +58,7 @@ class GsheetAppend extends Node {
             body: JSON.stringify({
                     range: vals.range,
                     majorDimension: vals.majorDimension,
-                    values: vals.values
+                    values: values
                 })
         }
         try{
