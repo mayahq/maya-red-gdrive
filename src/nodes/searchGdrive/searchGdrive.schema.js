@@ -15,10 +15,10 @@ class SearchGdrive extends Node {
         isConfig: false,
         icon: "drive.png",
         fields: {
-            query: new fields.Typed({type: 'str', defaultVal: '', allowedTypes: ['msg', 'flow', 'global']}),
-            includeItemsFromAllDrives: new fields.Typed({type: 'bool', defaultVal: true, allowedTypes: ['msg', 'flow', 'global']}),
-            pageSize: new fields.Typed({type: 'num', defaultVal: 10, allowedTypes: ['msg', 'flow', 'global']}),
-            pageToken: new fields.Typed({type: 'str', defaultVal: '', allowedTypes: ['msg', 'flow', 'global']}),
+            query: new fields.Typed({ type: 'str', defaultVal: '', allowedTypes: ['msg', 'flow', 'global'] }),
+            includeItemsFromAllDrives: new fields.Typed({ type: 'bool', defaultVal: true, allowedTypes: ['msg', 'flow', 'global'] }),
+            pageSize: new fields.Typed({ type: 'num', defaultVal: 10, allowedTypes: ['msg', 'flow', 'global'] }),
+            pageToken: new fields.Typed({ type: 'str', defaultVal: '', allowedTypes: ['msg', 'flow', 'global'] }),
         },
 
     })
@@ -29,9 +29,8 @@ class SearchGdrive extends Node {
         })
     }
 
-    async refreshTokens() {
-        const newTokens = await refresh(this)
-        await this.tokens.set(newTokens)
+    async refreshTokens({ force = false } = {}) {
+        const newTokens = await refresh(this, { force })
         return newTokens
     }
 
@@ -45,23 +44,27 @@ class SearchGdrive extends Node {
         this.setStatus("PROGRESS", "fetching drive files...");
         var fetch = require("node-fetch"); // or fetch() is native in browsers
         let fetchConfig = {
-            url: `https://www.googleapis.com/drive/v3/files?q=${encodeURI(vals.query)}&includeItemsFromAllDrives=${vals.includeItemsFromAllDrives}&supportsTeamDrives=${vals.includeItemsFromAllDrives}&pageSize=${vals.pageSize}${vals.pageToken && vals.pageToken!== '' ? `&pageToken=${vals.pageToken}` : ''}`,
+            url: `https://www.googleapis.com/drive/v3/files?q=${encodeURI(vals.query)}&includeItemsFromAllDrives=${vals.includeItemsFromAllDrives}&supportsTeamDrives=${vals.includeItemsFromAllDrives}&pageSize=${vals.pageSize}${vals.pageToken && vals.pageToken !== '' ? `&pageToken=${vals.pageToken}` : ''}`,
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${this.tokens.vals.access_token}`,
                 "Content-Type": "application/json"
             }
         }
-        try{
-            let res = await fetch(fetchConfig.url, 
-            {
-                method: fetchConfig.method,
-                headers: fetchConfig.headers
-            });
+        let res
+        try {
+            res = await fetch(fetchConfig.url,
+                {
+                    method: fetchConfig.method,
+                    headers: fetchConfig.headers
+                });
             let json = await res.json();
-            if(json.error){
-                if(json.error.code === 401){
-                    const { access_token } = await this.refreshTokens()
+            // let json = { error: { code: 401 }}
+            if (json.error) {
+                if (json.error.code === 401) {
+                    console.log('We refreshing')
+                    const { access_token, fromCache } = await this.refreshTokens({ force: false })
+                    console.log('access_token', access_token, fromCache)
                     if (!access_token) {
                         this.setStatus('ERROR', 'Failed to refresh access token')
                         msg["__isError"] = true;
@@ -71,17 +74,28 @@ class SearchGdrive extends Node {
                         return msg
                     }
                     fetchConfig.headers.Authorization = `Bearer ${access_token}`;
-                    res = await fetch(fetchConfig.url, 
-                            {
-                                method: fetchConfig.method,
-                                headers: fetchConfig.headers
-                            });
+                    res = await fetch(fetchConfig.url,
+                        {
+                            method: fetchConfig.method,
+                            headers: fetchConfig.headers
+                        });
                     json = await res.json();
-                    if(json.error){
-                        msg["__isError"] = true
-                        msg.error = json.error;
-                        this.setStatus("ERROR", json.error.message);
-                        return msg;
+                    if (json.error) {
+                        if (json.error.code === 401 && fromCache) {
+                            const { access_token } = await this.refreshTokens({ force: true })
+                            fetchConfig.headers.Authorization = `Bearer ${access_token}`;
+                            res = await fetch(fetchConfig.url,
+                                {
+                                    method: fetchConfig.method,
+                                    headers: fetchConfig.headers
+                                });
+                            json = await res.json();
+                        } else {
+                            msg["__isError"] = true
+                            msg.error = json.error;
+                            this.setStatus("ERROR", json.error.message);
+                            return msg;
+                        }
                     }
                 } else {
                     msg["__isError"] = true;
@@ -89,13 +103,14 @@ class SearchGdrive extends Node {
                     this.setStatus("ERROR", json.error.message);
                     return msg;
                 }
-                
+
             }
             msg.payload = json;
             this.setStatus("SUCCESS", "fetched");
             return msg;
         }
-        catch(err){
+        catch (err) {
+            console.log('There be error', err)
             msg["__isError"] = true;
             msg.error = err;
             this.setStatus("ERROR", "error occurred");
