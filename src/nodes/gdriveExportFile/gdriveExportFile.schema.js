@@ -57,8 +57,8 @@ class GdriveExportFile extends Node {
 			fileName: new fields.Typed({type: 'str', allowedTypes: ["str", "msg", "flow", "global"], defaultVal: "", displayName: "Filename"})
 		},
 	});
-	async refreshTokens() {
-        const newTokens = await refresh(this)
+	async refreshTokens({ force = false } = {}) {
+        const newTokens = await refresh(this, { force })
         await this.tokens.set(newTokens)
         return newTokens
     }
@@ -203,7 +203,7 @@ class GdriveExportFile extends Node {
 				return msg;
 			} else {
 				if(res.status === 401) {
-					const { access_token } = await this.refreshTokens();
+					const { access_token, fromCache } = await this.refreshTokens({ force: false });
 					if (!access_token) {
                         this.setStatus('ERROR', 'Failed to refresh access token')
                         msg["__isError"] = true;
@@ -225,9 +225,28 @@ class GdriveExportFile extends Node {
 					);
 					if (res.status === 200) {
 						msg.payload = filePathToSave;
-						this.setStatus("SUCCESS", "file downloaded");
+						this.setStatus("SUCCESS", "File downloaded");
 						return msg;
 					} else {
+						if (fromCache) {
+							const { access_token } = await this.refreshTokens({ force: true })
+							res = await downloadFile(
+								apiRequestUrl,
+								filePathToSave,
+								{
+									method: "GET",
+									headers: {
+										Authorization: `Bearer ${access_token}`,
+										"Content-Type": "application/json",
+									},
+								}
+							)
+							if (res.status === 200) {
+								msg.payload = filePathToSave
+								this.setStatus('SUCCESS', 'File downloaded')
+								return msg
+							}
+						}
 						msg["__isError"] = true;
 						msg.error = "Error downloading file";
 						this.setStatus("ERROR", "error occurred");
