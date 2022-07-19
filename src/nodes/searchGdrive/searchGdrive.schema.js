@@ -63,7 +63,8 @@ class SearchGdrive extends Node {
             if (json.error) {
                 if (json.error.code === 401) {
                     console.log('We refreshing')
-                    const { access_token, fromCache } = await this.refreshTokens({ force: false })
+                    const { tokens, fromCache } = await this.refreshTokens({ force: false })
+                    const { access_token } = tokens
                     console.log('access_token', access_token, fromCache)
                     if (!access_token) {
                         this.setStatus('ERROR', 'Failed to refresh access token')
@@ -82,7 +83,8 @@ class SearchGdrive extends Node {
                     json = await res.json();
                     if (json.error) {
                         if (json.error.code === 401 && fromCache) {
-                            const { access_token } = await this.refreshTokens({ force: true })
+                            const { tokens } = await this.refreshTokens({ force: true })
+                            const { access_token } = tokens
                             fetchConfig.headers.Authorization = `Bearer ${access_token}`;
                             res = await fetch(fetchConfig.url,
                                 {

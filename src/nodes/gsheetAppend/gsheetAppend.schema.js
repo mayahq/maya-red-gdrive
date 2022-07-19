@@ -71,7 +71,8 @@ class GsheetAppend extends Node {
             let json = await res.json();
             if (json.error) {
                 if (json.error.code === 401) {
-                    const { access_token, fromCache } = await this.refreshTokens({ force: false })
+                    const { tokens, fromCache } = await this.refreshTokens({ force: false })
+                    const { access_token } = tokens
                     if (!access_token) {
                         this.setStatus('ERROR', 'Failed to refresh access token')
                         msg["__isError"] = true;
@@ -91,7 +92,8 @@ class GsheetAppend extends Node {
                     json = await res.json();
                     if (json.error) {
                         if (json.error.code === 401 && fromCache) {
-                            const { access_token } = await this.refreshTokens({ force: true })
+                            const { tokens } = await this.refreshTokens({ force: true })
+                            const { access_token } = tokens
                             fetchConfig.headers.Authorization = `Bearer ${access_token}`;
                             res = await fetch(fetchConfig.url,
                                 {

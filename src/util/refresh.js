@@ -1,47 +1,57 @@
 const SECOND = 1000
 const MINUTE = 60*SECOND
 const HOUR = 60*MINUTE
+const { Tokens } = require('@mayahq/module-sdk')
 
+/**
+ * 
+ * @param {Node} node 
+ * @param {boolean} force - If true, function will skip cache and directly refresh
+ * @returns 
+ */
 async function refresh(node, { force = false } = {}) {
-    const tokenControl = node.tokens
+    tokenControl = node.tokens
     console.log('Trying to refresh tokens')
-
+    
     const toks = await tokenControl.lockLocalTokens(async (localTokens) => {
-        console.log('Acquired local token lock', localTokens)
+        console.log('Acquired local token lock')
 
         if (!force) {
             const { lastUpdated } = localTokens
             if (Date.now() - lastUpdated < 1*HOUR - 2*MINUTE) {
                 console.log('Tokens were already updated in local cache, no need to refresh', )
                 console.log('New tokens:', localTokens)
-                tokenControl.vals = { ...(tokenControl.vals), ...localTokens, fromCache: true }
-                return localTokens
+                tokenControl.vals = localTokens.tokens
+                tokenControl.lastUpdated = localTokens.lastUpdated
+                return { ...localTokens, fromCache: true }
             }
         }
 
-        const toks = await tokenControl.lockTokens(async (tokens) => {
+        // At this point, we know the tokens in cache are useless. We must hit the cloud API and see if
+        // we can get fresh tokens from there.
+
+        const toks = await tokenControl.lockTokens(async (tokenData) => {
             console.log('Acquired remote token lock')
-            const { access_token, refresh_token, lastUpdated, referenceId } = tokens
+            const { tokens, lastUpdated } = tokenData
 
             if (Date.now() - lastUpdated < 1*HOUR - 2*MINUTE) {
-                console.log('Tokens were already updated, no need to refresh')
+                console.log('Tokens were already updated in cloud, no need to refresh')
                 console.log('New tokens:', tokens)
-                tokenControl.vals = { ...(tokenControl.vals), ...tokens }
-                await node.tokens.setLocal(tokens, { lock: false, referenceId })
-                return tokens
+                tokenControl.vals = tokens
+                tokenControl.lastUpdated = lastUpdated
+                await node.tokens.setLocal(tokenData, { lock: false })
+                return tokenData
             }
+
+            // At this point, we know the tokens are not updated in cloud either. We must refresh them.
 
             console.log('Tokens were not updated, refreshing with', tokens)
             try {
+                const { access_token, refresh_token } = tokens
                 const newTokens = await tokenControl.refresh({ access_token, refresh_token })
                 if (newTokens.error) {
                     console.log('There was an error:', newTokens.error)
-                    return {
-                        access_token: null,
-                        refresh_token: null,
-                        lastUpdated: null,
-                        error: true
-                    }
+                    return newTokens // This is gonna be empty in case of an error
                 }
 
                 console.log('Tokens refreshed via API. New tokens:', newTokens)
@@ -57,19 +67,22 @@ async function refresh(node, { force = false } = {}) {
                 }
 
                 return {
-                    access_token: null,
-                    refresh_token: null,
-                    lastUpdated: null,
-                    error: true
+                    referenceId: '',
+                    resource: '',
+                    tokens: {
+                        access_token: null,
+                        refresh_token: null,
+                        lastUpdated: null,
+                        error: true
+                    },
+                    lastUpdated: -1
                 }
             }
         })
-        
-        console.log('toks1', toks)
         return toks
     })
 
-    console.log('toks2', toks)
+    console.log('yeehee2')
     return toks
 }
 
